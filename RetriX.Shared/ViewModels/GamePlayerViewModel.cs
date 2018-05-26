@@ -196,8 +196,9 @@ namespace RetriX.Shared.ViewModels
             if (parseSuccessful)
             {
                 currentFilter = parsedFilter;
-                VideoService.SetFilter(CurrentFilter);
             }
+
+            VideoService.SetFilter(CurrentFilter);
         }
 
 

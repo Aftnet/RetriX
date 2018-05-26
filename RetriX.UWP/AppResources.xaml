@@ -1,0 +1,32 @@
+﻿<ResourceDictionary
+    x:Class="RetriX.UWP.AppResources"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:RetriX.UWP.Converters"
+    xmlns:tkconv="using:Microsoft.Toolkit.Uwp.UI.Converters">
+
+    <x:Double x:Key="WideLayoutSplitPoint">800</x:Double>
+    <Thickness x:Key="DafaultContentMargin">16,0</Thickness>
+
+    <Style x:Name="RootScrollViewerStyle" TargetType="ScrollViewer">
+        <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="Background" Value="{StaticResource ApplicationPageBackgroundThemeBrush}"/>
+    </Style>
+    
+    <Style x:Name="PageHeaderTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextBlockStyle}">
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Margin" Value="0,12,0,0"/>
+        <Setter Property="Text" Value="DESIGN"/>
+    </Style>
+
+    <FontFamily x:Key="GameSymbolsFontFamily">/Assets/GameGlyphs.ttf#Flaticon</FontFamily>
+    <Style x:Key="GameSymbolsFontStyle" TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlockStyle}">
+        <Setter Property="FontFamily" Value="{StaticResource GameSymbolsFontFamily}"/>
+    </Style>
+
+    <converters:ItemClickEventArgsConverter x:Key="ItemClickEventArgsConverter"/>
+    <tkconv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    <tkconv:BoolNegationConverter x:Key="BoolNegationConverter"/>
+</ResourceDictionary>

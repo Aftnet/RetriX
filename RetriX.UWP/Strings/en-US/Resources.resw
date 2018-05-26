@@ -1,0 +1,240 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AppDescription.Text" xml:space="preserve">
+    <value>RetriX multiple game system emulator</value>
+  </data>
+  <data name="Appname.Text" xml:space="preserve">
+    <value>RetriX</value>
+  </data>
+  <data name="GameBoyAdvanceRomDescription.Text" xml:space="preserve">
+    <value>Nintendo Game Boy Advance Rom</value>
+  </data>
+  <data name="GameBoyRomDescription.Text" xml:space="preserve">
+    <value>Nintendo Game Boy Rom</value>
+  </data>
+  <data name="GameGearRomDescription.Text" xml:space="preserve">
+    <value>SEGA Game Gear Rom</value>
+  </data>
+  <data name="MasterSystemRomDescription.Text" xml:space="preserve">
+    <value>SEGA Master System Rom</value>
+  </data>
+  <data name="MegaDriveRomDescription.Text" xml:space="preserve">
+    <value>SEGA Mega Drive Rom</value>
+  </data>
+  <data name="NESRomDescription.Text" xml:space="preserve">
+    <value>Nintendo Entertainment System Rom</value>
+  </data>
+  <data name="SG1000RomDescription.Text" xml:space="preserve">
+    <value>SEGA SG-1000 Rom</value>
+  </data>
+  <data name="Slot1MenuFlyoutItem.Text" xml:space="preserve">
+    <value>Slot 1</value>
+  </data>
+  <data name="SNESRomDescription.Text" xml:space="preserve">
+    <value>Super Nintendo Entertainment System Rom</value>
+  </data>
+  <data name="Slot2MenuFlyoutItem.Text" xml:space="preserve">
+    <value>Slot 2</value>
+  </data>
+  <data name="Slot3MenuFlyoutItem.Text" xml:space="preserve">
+    <value>Slot 3</value>
+  </data>
+  <data name="Slot4MenuFlyoutItem.Text" xml:space="preserve">
+    <value>Slot 4</value>
+  </data>
+  <data name="Slot5MenuFlyoutItem.Text" xml:space="preserve">
+    <value>Slot 5</value>
+  </data>
+  <data name="Slot6MenuFlyoutItem.Text" xml:space="preserve">
+    <value>Slot 6</value>
+  </data>
+  <data name="Slot7MenuFlyoutItem.Text" xml:space="preserve">
+    <value>Slot 7</value>
+  </data>
+  <data name="Slot8MenuFlyoutItem.Text" xml:space="preserve">
+    <value>Slot 8</value>
+  </data>
+  <data name="LoadMenuFlyoutItem.Text" xml:space="preserve">
+    <value>Load</value>
+  </data>
+  <data name="SaveMenuFlyoutItem.Text" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="AboutHeader.Text" xml:space="preserve">
+    <value>ABOUT</value>
+  </data>
+  <data name="AboutBtn.Label" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="CopyrightLabel.Text" xml:space="preserve">
+    <value>©2017</value>
+  </data>
+  <data name="VersionLabel.Text" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="EmulationCodeThanksToLabel.Text" xml:space="preserve">
+    <value>Game systems emulation code thanks to</value>
+  </data>
+  <data name="IconsDesignedByLabel.Text" xml:space="preserve">
+    <value>designed by</value>
+  </data>
+  <data name="ExpectedFileMD5Label.Text" xml:space="preserve">
+    <value>MD5 should be</value>
+  </data>
+  <data name="ImportFileButtonLabel.Text" xml:space="preserve">
+    <value>Import</value>
+  </data>
+  <data name="SettingsBtn.Label" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="SettingsHeader.Text" xml:space="preserve">
+    <value>SETTINGS</value>
+  </data>
+  <data name="BiosFilesHeader.Text" xml:space="preserve">
+    <value>Bios files</value>
+  </data>
+  <data name="PlayStationRomDescription.Text" xml:space="preserve">
+    <value>Sony PlayStation Rom</value>
+  </data>
+  <data name="DSRomDescription.Text" xml:space="preserve">
+    <value>Nintendo DS Rom</value>
+  </data>
+  <data name="NeoGeoPocketRomDescription.Text" xml:space="preserve">
+    <value>SNK Neo Geo Pocket Rom</value>
+  </data>
+  <data name="PCEngineRomDescription.Text" xml:space="preserve">
+    <value>NEC PC Engine Rom</value>
+  </data>
+  <data name="CHDRomDescription.Text" xml:space="preserve">
+    <value>CHD compressed Rom</value>
+  </data>
+  <data name="CueFileDescription.Text" xml:space="preserve">
+    <value>Cue sheet</value>
+  </data>
+  <data name="FilteringMenuFlyoutItem.Text" xml:space="preserve">
+    <value>Filtering</value>
+  </data>
+  <data name="LinearFilteringMenuFlyout.Text" xml:space="preserve">
+    <value>Linear</value>
+  </data>
+  <data name="NNFilteringMenuFlyout.Text" xml:space="preserve">
+    <value>None</value>
+  </data>
+</root>

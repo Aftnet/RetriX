@@ -1,0 +1,126 @@
+﻿<views:MvxWindowsPage
+    x:Class="RetriX.UWP.Pages.GameSystemSelectionView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:views="using:MvvmCross.Uwp.Views"
+    xmlns:vm="using:RetriX.Shared.ViewModels"
+    mc:Ignorable="d">
+
+    <views:MvxWindowsPage.Resources>
+        <Style x:Key="GameSystemListItemManufacturerStyle" TargetType="TextBlock">
+            <Setter Property="TextWrapping" Value="NoWrap"/>
+            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+        </Style>
+        <Style x:Key="GameSystemListItemNameStyle" TargetType="TextBlock" BasedOn="{StaticResource GameSystemListItemManufacturerStyle}">
+            <Setter Property="FontSize" Value="32"/>
+        </Style>
+        <Style x:Key="GameSystemListItemIconFrameStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource SystemControlForegroundAccentBrush}"/>
+            <Setter Property="Padding" Value="12"/>
+            <Setter Property="Margin" Value="8"/>
+        </Style>
+        <Style x:Key="GameSystemListItemIconStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontFamily" Value="{StaticResource GameSymbolsFontFamily}"/>
+            <Setter Property="FontSize" Value="56"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <DataTemplate x:Key="GameSystemListItemDT" x:DataType="vm:GameSystemViewModel">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Border Style="{StaticResource GameSystemListItemIconFrameStyle}">
+                    <TextBlock Text="{x:Bind Symbol, FallbackValue=&#xf118;}" Style="{StaticResource GameSystemListItemIconStyle}"/>
+                </Border>
+                <StackPanel Orientation="Vertical" Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="{x:Bind Name, FallbackValue='Console name'}" Style="{StaticResource GameSystemListItemNameStyle}"/>
+                    <TextBlock Text="{x:Bind Manufacturer,  FallbackValue='Console manufacturer'}" Style="{StaticResource GameSystemListItemManufacturerStyle}"/>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+
+        <Style x:Key="GameSystemGridItemManufacturerStyle" TargetType="TextBlock" BasedOn="{StaticResource GameSystemListItemManufacturerStyle}">
+        </Style>
+        <Style x:Key="GameSystemGridItemNameStyle" TargetType="TextBlock" BasedOn="{StaticResource GameSystemListItemNameStyle}">
+            <Setter Property="FontSize" Value="20"/>
+        </Style>
+        <Style x:Key="GameSystemGridItemIconFrameStyle" TargetType="Border" BasedOn="{StaticResource GameSystemListItemIconFrameStyle}">
+            <Setter Property="Width" Value="160"/>
+            <Setter Property="Height" Value="220"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0"/>
+        </Style>
+        <Style x:Key="GameSystemGridItemIconStyle" TargetType="TextBlock" BasedOn="{StaticResource GameSystemListItemIconStyle}">
+            <Setter Property="FontSize" Value="100"/>
+        </Style>
+        <DataTemplate x:Key="GameSystemGridItemDT" x:DataType="vm:GameSystemViewModel">
+            <StackPanel Orientation="Vertical" Margin="8">
+                <Border Style="{StaticResource GameSystemGridItemIconFrameStyle}">
+                    <TextBlock Text="{x:Bind Symbol, FallbackValue=&#xf118;}" Style="{StaticResource GameSystemGridItemIconStyle}"/>
+                </Border>
+                <TextBlock Text="{x:Bind Name, FallbackValue='Console name'}" Style="{StaticResource GameSystemGridItemNameStyle}"/>
+                <TextBlock Text="{x:Bind Manufacturer,  FallbackValue='Console manufacturer'}" Style="{StaticResource GameSystemGridItemManufacturerStyle}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <Style x:Key="RootListStyle" TargetType="ListViewBase">
+            <Setter Property="SelectionMode" Value="None"/>
+            <Setter Property="IsItemClickEnabled" Value="True"/>
+            <Setter Property="Grid.Row" Value="1"/>
+        </Style>
+    </views:MvxWindowsPage.Resources>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <CommandBar Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+            <AppBarButton x:Uid="SettingsBtn" Icon="Setting" Command="{x:Bind VM.ShowSettings}"/>
+            <CommandBar.SecondaryCommands>
+                <AppBarButton x:Uid="AboutBtn" Command="{x:Bind VM.ShowAbout}"/>
+            </CommandBar.SecondaryCommands>
+        </CommandBar>
+        <ListView x:Name="GameSystemsList" ItemsSource="{x:Bind VM.GameSystems, Mode=OneWay}" ItemTemplate="{StaticResource GameSystemListItemDT}" Style="{StaticResource RootListStyle}">
+            <interactivity:Interaction.Behaviors>
+                <core:EventTriggerBehavior EventName="ItemClick">
+                    <core:InvokeCommandAction Command="{x:Bind VM.GameSystemSelected}" InputConverter="{StaticResource ItemClickEventArgsConverter}"/>
+                </core:EventTriggerBehavior>
+            </interactivity:Interaction.Behaviors>
+        </ListView>
+        <GridView x:Name="GameSystemsGrid" ItemsSource="{x:Bind VM.GameSystems, Mode=OneWay}" ItemTemplate="{StaticResource GameSystemGridItemDT}" Style="{StaticResource RootListStyle}" Visibility="Collapsed">
+            <interactivity:Interaction.Behaviors>
+                <core:EventTriggerBehavior EventName="ItemClick">
+                    <core:InvokeCommandAction Command="{x:Bind VM.GameSystemSelected}" InputConverter="{StaticResource ItemClickEventArgsConverter}"/>
+                </core:EventTriggerBehavior>
+            </interactivity:Interaction.Behaviors>
+        </GridView>
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState>
+                    <VisualState.Setters>
+                        <Setter Target="GameSystemsList.Visibility" Value="Visible"/>
+                        <Setter Target="GameSystemsGrid.Visibility" Value="Collapsed"/>
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="{StaticResource WideLayoutSplitPoint}"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="GameSystemsList.Visibility" Value="Collapsed"/>
+                        <Setter Target="GameSystemsGrid.Visibility" Value="Visible"/>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+    </Grid>
+</views:MvxWindowsPage>

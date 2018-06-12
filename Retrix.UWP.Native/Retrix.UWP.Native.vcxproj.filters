@@ -8,11 +8,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="D3DSurfaceMap.cpp" />
+    <ClCompile Include="BitmapMap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
-    <ClInclude Include="D3DSurfaceMap.h" />
+    <ClInclude Include="BitmapMap.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

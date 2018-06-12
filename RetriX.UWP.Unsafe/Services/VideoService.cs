@@ -1,4 +1,5 @@
 ﻿using LibRetriX;
+using Microsoft.Graphics.Canvas.UI;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using RetriX.Shared.Services;
 using RetriX.UWP.Components;
@@ -96,17 +97,12 @@ namespace RetriX.UWP
 
         public void GeometryChanged(GameGeometry geometry)
         {
-            if (RenderPanel == null)
-            {
-                return;
-            }
-
-            RenderTargetManager.UpdateRenderTargetSize(RenderPanel.Device, geometry);
+            RenderTargetManager.CurrentGeometry = geometry;
         }
 
         public void PixelFormatChanged(PixelFormats format)
         {
-            RenderTargetManager.CurrentCorePixelFormat = format;
+            RenderTargetManager.CurrentPixelFormat = format;
         }
 
         public void TimingsChanged(SystemTimings timings)

@@ -207,7 +207,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
-    <ClInclude Include="D3DSurfaceMap.h" />
+    <ClInclude Include="BitmapMap.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -218,7 +218,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="D3DSurfaceMap.cpp" />
+    <ClCompile Include="BitmapMap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -17,15 +17,29 @@ BitmapMap::~BitmapMap()
 
 CanvasBitmap^ BitmapMap::CreateMappableBitmap(CanvasDrawingSession^ drawingSession, unsigned int width, unsigned int height)
 {
-	auto size = D2D1::SizeU(width, height);
-	auto properties = D2D1::BitmapProperties1(D2D1_BITMAP_OPTIONS_CPU_READ, D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE));
+	ComPtr<ID3D11Device> d3dDevice;
+	__abi_ThrowIfFailed(GetDXGIInterface(drawingSession->Device, d3dDevice.GetAddressOf()));
 
-	auto context = GetWrappedResource<ID2D1DeviceContext1>(drawingSession);
-	ComPtr<ID2D1Bitmap1> bitmap;
-	__abi_ThrowIfFailed(context->CreateBitmap(size, nullptr, 0u, properties, bitmap.GetAddressOf()));
-	
-	ComPtr<IUnknown> unknown;
-	__abi_ThrowIfFailed(bitmap.As(&unknown));
-	auto output = GetOrCreate<CanvasBitmap>(drawingSession->Device, unknown.Get());
+	D3D11_TEXTURE2D_DESC texDesc = { 0 };
+	texDesc.Width = width;
+	texDesc.Height = height;
+	texDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+	texDesc.MipLevels = 1;
+	texDesc.ArraySize = 1;
+	texDesc.SampleDesc.Count = 1;
+	texDesc.SampleDesc.Quality = 0;
+	texDesc.Usage = D3D11_USAGE_DYNAMIC;
+	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	texDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	texDesc.MiscFlags = 0;
+
+	ComPtr<ID3D11Texture2D> d3dTexture;
+	__abi_ThrowIfFailed(d3dDevice->CreateTexture2D(&texDesc, nullptr, d3dTexture.GetAddressOf()));
+
+	ComPtr<IDXGISurface> d3dSurface;
+	__abi_ThrowIfFailed(d3dTexture.As(&d3dSurface));
+
+	auto winRTSurface = CreateDirect3DSurface(d3dSurface.Get());
+	auto output = CanvasBitmap::CreateFromDirect3D11Surface(drawingSession, winRTSurface);
 	return output;
 }

@@ -14,44 +14,48 @@ namespace RetriX.UWP.Components
     {
         private const uint RenderTargetMinSize = 1024;
 
-        private static readonly IReadOnlyDictionary<PixelFormats, int> PixelFormatsSizeMapping = new Dictionary<PixelFormats, int>
-        {
-            { PixelFormats.XRGB8888, 4 },
-            { PixelFormats.RGB565, 2 },
-            { PixelFormats.RGB0555, 2 },
-            { PixelFormats.Unknown, 0 },
-        };
-
         private object RenderTargetLock { get; } = new object();
         private CanvasBitmap RenderTarget { get; set; } = null;
         public TextureFilterTypes RenderTargetFilterType { get; set; } = TextureFilterTypes.Bilinear;
-        private IDirect3DSurface RenderTargetSurface { get; set; } = null;
+
         private Rect RenderTargetViewport = new Rect();
         //This may be different from viewport's width/haight.
         private float RenderTargetAspectRatio { get; set; } = 1.0f;
 
-        private PixelFormats currentCorePixelFormat = PixelFormats.Unknown;
-        public PixelFormats CurrentCorePixelFormat
+        private GameGeometry currentGeometry;
+        public GameGeometry CurrentGeometry
         {
-            get { return currentCorePixelFormat; }
-            set { currentCorePixelFormat = value; CurrentCorePixelSize = PixelFormatsSizeMapping[currentCorePixelFormat]; }
+            get => currentGeometry;
+            set
+            {
+                currentGeometry = value;
+                RenderTargetAspectRatio = currentGeometry.AspectRatio;
+                if (RenderTargetAspectRatio < 0.1f)
+                {
+                    RenderTargetAspectRatio = (float)(currentGeometry.BaseWidth) / currentGeometry.BaseHeight;
+                }
+            }
         }
 
+        public PixelFormats CurrentPixelFormat { get; set; } = PixelFormats.Unknown;
         public Rotations CurrentRotation { get; set; }
-
-        private int CurrentCorePixelSize = 0;
 
         public void Dispose()
         {
             RenderTarget?.Dispose();
             RenderTarget = null;
+        }
 
-            RenderTargetSurface?.Dispose();
-            RenderTargetSurface = null;
+        public void CreateResources(CanvasDrawingSession drawingSession)
+        {
+            Dispose();
+            UpdateRenderTargetSize(drawingSession);
         }
 
         public void Render(CanvasDrawingSession drawingSession, Size canvasSize)
         {
+            UpdateRenderTargetSize(drawingSession);
+
             var viewportWidth = RenderTargetViewport.Width;
             var viewportHeight = RenderTargetViewport.Height;
             var aspectRatio = RenderTargetAspectRatio;
@@ -91,7 +95,7 @@ namespace RetriX.UWP.Components
 
         public unsafe void UpdateFromCoreOutputRGB0555(CanvasDevice device, IReadOnlyList<ushort> data, uint width, uint height, ulong pitch)
         {
-            if (data == null || RenderTarget == null || CurrentCorePixelSize == 0)
+            if (data == null || RenderTarget == null || CurrentPixelFormat == PixelFormats.Unknown)
                 return;
 
             lock (RenderTargetLock)
@@ -99,7 +103,7 @@ namespace RetriX.UWP.Components
                 RenderTargetViewport.Width = width;
                 RenderTargetViewport.Height = height;
 
-                using (var renderTargetMap = new D3DSurfaceMap(device, RenderTargetSurface))
+                using (var renderTargetMap = new BitmapMap(device, RenderTarget))
                 {
                     var dataPtr = (byte*)new IntPtr(renderTargetMap.Data).ToPointer();
                     FramebufferConverter.ConvertFrameBufferRGB0555ToXRGB8888(width, height, data, (int)pitch, dataPtr, (int)renderTargetMap.PitchBytes);
@@ -109,7 +113,7 @@ namespace RetriX.UWP.Components
 
         public unsafe void UpdateFromCoreOutputRGB565(CanvasDevice device, IReadOnlyList<ushort> data, uint width, uint height, ulong pitch)
         {
-            if (data == null || RenderTarget == null || CurrentCorePixelSize == 0)
+            if (data == null || RenderTarget == null || CurrentPixelFormat == PixelFormats.Unknown)
                 return;
 
             lock (RenderTargetLock)
@@ -117,7 +121,7 @@ namespace RetriX.UWP.Components
                 RenderTargetViewport.Width = width;
                 RenderTargetViewport.Height = height;
 
-                using (var renderTargetMap = new D3DSurfaceMap(device, RenderTargetSurface))
+                using (var renderTargetMap = new BitmapMap(device, RenderTarget))
                 {
                     var dataPtr = (byte*)new IntPtr(renderTargetMap.Data).ToPointer();
                     FramebufferConverter.ConvertFrameBufferRGB565ToXRGB8888(width, height, data, (int)pitch, dataPtr, (int)renderTargetMap.PitchBytes);
@@ -127,7 +131,7 @@ namespace RetriX.UWP.Components
 
         public unsafe void UpdateFromCoreOutputXRGB8888(CanvasDevice device, IReadOnlyList<uint> data, uint width, uint height, ulong pitch)
         {
-            if (data == null || RenderTarget == null || CurrentCorePixelSize == 0)
+            if (data == null || RenderTarget == null || CurrentPixelFormat == PixelFormats.Unknown)
                 return;
 
             lock (RenderTargetLock)
@@ -135,7 +139,7 @@ namespace RetriX.UWP.Components
                 RenderTargetViewport.Width = width;
                 RenderTargetViewport.Height = height;
 
-                using (var renderTargetMap = new D3DSurfaceMap(device, RenderTargetSurface))
+                using (var renderTargetMap = new BitmapMap(device, RenderTarget))
                 {
                     var dataPtr = (byte*)new IntPtr(renderTargetMap.Data).ToPointer();
                     FramebufferConverter.ConvertFrameBufferXRGB8888(width, height, data, (int)pitch, dataPtr, (int)renderTargetMap.PitchBytes);
@@ -143,18 +147,12 @@ namespace RetriX.UWP.Components
             }
         }
 
-        public void UpdateRenderTargetSize(CanvasDevice device, GameGeometry geometry)
+        private void UpdateRenderTargetSize(CanvasDrawingSession drawingSession)
         {
-            RenderTargetAspectRatio = geometry.AspectRatio;
-            if (RenderTargetAspectRatio < 0.1f)
-            {
-                RenderTargetAspectRatio = (float)(geometry.BaseWidth) / geometry.BaseHeight;
-            }
-
             if (RenderTarget != null)
             {
                 var currentSize = RenderTarget.Size;
-                if (currentSize.Width >= geometry.MaxWidth && currentSize.Height >= geometry.MaxHeight)
+                if (currentSize.Width >= CurrentGeometry.MaxWidth && currentSize.Height >= CurrentGeometry.MaxHeight)
                 {
                     return;
                 }
@@ -162,13 +160,11 @@ namespace RetriX.UWP.Components
 
             lock (RenderTargetLock)
             {
-                var size = Math.Max(Math.Max(geometry.MaxWidth, geometry.MaxHeight), RenderTargetMinSize);
+                var size = Math.Max(Math.Max(CurrentGeometry.MaxWidth, CurrentGeometry.MaxHeight), RenderTargetMinSize);
                 size = ClosestGreaterPowerTwo(size);
 
                 RenderTarget?.Dispose();
-                RenderTargetSurface?.Dispose();
-                RenderTargetSurface = D3DSurfaceMap.CreateMappableD3DSurface(device, size, size);
-                RenderTarget = CanvasBitmap.CreateFromDirect3D11Surface(device, RenderTargetSurface);
+                RenderTarget = BitmapMap.CreateMappableBitmap(drawingSession, size, size);
             }
         }
 

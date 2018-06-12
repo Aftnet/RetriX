@@ -136,9 +136,9 @@
       <Project>{58B82D57-A956-4492-96FB-3E82FA82798A}</Project>
       <Name>RetriX.Shared</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Retrix.UWP.Native\Retrix.UWP.Native.vcxproj">
-      <Project>{aa168014-f150-4a65-93f9-121da3eb0a01}</Project>
-      <Name>Retrix.UWP.Native</Name>
+    <ProjectReference Include="..\RetriX.UWP.Native\RetriX.UWP.Native.vcxproj">
+      <Project>{0e82ee5a-b44a-4b8b-928a-a981c2cf8917}</Project>
+      <Name>RetriX.UWP.Native</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

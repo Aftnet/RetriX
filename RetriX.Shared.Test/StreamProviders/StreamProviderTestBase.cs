@@ -6,31 +6,36 @@ using Xunit;
 
 namespace RetriX.Shared.Test.StreamProviders
 {
-    public abstract class StreamProviderTestBase
+    [Collection(nameof(StreamProviders))]
+    public abstract class StreamProviderTestBase<T> where T : IStreamProvider
     {
-        protected abstract Task<IStreamProvider> GetTargetAsync();
+        protected abstract Task<T> GetTargetAsync();
 
         protected async Task ListingEntriesWorksInternal(int numExpectedEntries)
         {
-            var target = await GetTargetAsync();
-            var entries = await target.ListEntriesAsync();
-            Assert.Equal(numExpectedEntries, entries.Count());
+            using (var target = await GetTargetAsync())
+            {
+                var entries = await target.ListEntriesAsync();
+                Assert.Equal(numExpectedEntries, entries.Count());
+            }
         }
 
         protected async Task OpeningFileWorksInternal(string path, bool expectedSuccess)
         {
-            var target = await GetTargetAsync();
-            var stream = await target.OpenFileStreamAsync(path, System.IO.FileAccess.Read);
-            if (expectedSuccess)
+            using (var target = await GetTargetAsync())
             {
-                Assert.NotNull(stream);
-            }
-            else
-            {
-                Assert.Null(stream);
-            }
+                var stream = await target.OpenFileStreamAsync(path, System.IO.FileAccess.Read);
+                if (expectedSuccess)
+                {
+                    Assert.NotNull(stream);
+                }
+                else
+                {
+                    Assert.Null(stream);
+                }
 
-            stream?.Dispose();
+                stream?.Dispose();
+            }
         }
 
         protected Task<IDirectoryInfo> GetTestFilesFolderAsync()

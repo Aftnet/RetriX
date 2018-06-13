@@ -1,9 +1,7 @@
 ﻿using Plugin.FileSystem.Abstractions;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace RetriX.Shared.StreamProviders
@@ -14,7 +12,10 @@ namespace RetriX.Shared.StreamProviders
 
         private string HandledScheme { get; }
         private IFileInfo ArchiveFile { get; }
-        private IDictionary<string, byte[]> EntriesBufferMapping { get; } = new Dictionary<string, byte[]>();
+        private ZipArchive Archive { get; set; }
+
+        private IDictionary<string, ZipArchiveEntry> EntriesMapping { get; } = new SortedDictionary<string, ZipArchiveEntry>();
+        private HashSet<Stream> OpenStreams { get; } = new HashSet<Stream>();
 
         public ArchiveStreamProvider(string handledScheme, IFileInfo archiveFile)
         {
@@ -24,43 +25,59 @@ namespace RetriX.Shared.StreamProviders
 
         public void Dispose()
         {
-        }
-
-        public async Task InitializeAsync()
-        {
-            var stream = await ArchiveFile.OpenAsync(FileAccess.Read);
-            using (var archive = new ZipArchive(stream, ZipArchiveMode.Read))
+            Archive?.Dispose();
+            foreach (var i in OpenStreams)
             {
-                foreach (var i in archive.Entries)
-                {
-                    using (var entryStream = i.Open())
-                    {
-                        var memoryStream = new MemoryStream();
-                        await entryStream.CopyToAsync(memoryStream);
-                        EntriesBufferMapping.Add(Path.Combine(HandledScheme,i.FullName), memoryStream.ToArray());
-                    }
-                }
+                i.Dispose();
             }
         }
 
-        public Task<IEnumerable<string>> ListEntriesAsync()
+        public async Task<IEnumerable<string>> ListEntriesAsync()
         {
-            return Task.FromResult(EntriesBufferMapping.Keys.OrderBy(d => d) as IEnumerable<string>);
+            await InitializeAsync();
+            return EntriesMapping.Keys;
         }
 
-        public Task<Stream> OpenFileStreamAsync(string path, FileAccess accessType)
+        public async Task<Stream> OpenFileStreamAsync(string path, FileAccess accessType)
         {
-            if (!EntriesBufferMapping.Keys.Contains(path, StringComparer.OrdinalIgnoreCase))
+            await InitializeAsync();
+            if (!EntriesMapping.Keys.Contains(path))
             {
-                return Task.FromResult(null as Stream);
+                return default(Stream);
             }
 
-            var output = new MemoryStream(EntriesBufferMapping[path]);
-            return Task.FromResult(output as Stream);
+            using (var archiveStream = EntriesMapping[path].Open())
+            {
+                var output = new MemoryStream();
+                await archiveStream.CopyToAsync(output);
+                output.Position = 0;
+                OpenStreams.Add(output);
+                return output;
+            }
         }
 
         public void CloseStream(Stream stream)
         {
+            if (OpenStreams.Contains(stream))
+            {
+                stream.Dispose();
+                OpenStreams.Remove(stream);
+            }
+        }
+
+        private async Task InitializeAsync()
+        {
+            if (Archive != null)
+            {
+                return;
+            }
+
+            var stream = await ArchiveFile.OpenAsync(FileAccess.Read);
+            Archive = new ZipArchive(stream, ZipArchiveMode.Read, false);
+            foreach (var i in Archive.Entries)
+            {
+                EntriesMapping.Add(Path.Combine(HandledScheme, i.FullName.Replace('/', Path.DirectorySeparatorChar)), i);
+            }
         }
     }
 }

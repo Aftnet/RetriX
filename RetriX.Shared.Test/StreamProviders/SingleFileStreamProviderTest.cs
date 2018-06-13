@@ -4,11 +4,11 @@ using Xunit;
 
 namespace RetriX.Shared.Test.StreamProviders
 {
-    public class SingleFileStreamProviderTest : StreamProviderTestBase
+    public class SingleFileStreamProviderTest : StreamProviderTestBase<SingleFileStreamProvider>
     {
         private const string FilePath = "SCHEME\\SomeFile.ext";
 
-        protected override async Task<IStreamProvider> GetTargetAsync()
+        protected override async Task<SingleFileStreamProvider> GetTargetAsync()
         {
             var folder = await GetTestFilesFolderAsync();
             var file = await folder.GetFileAsync("TestFile.txt");

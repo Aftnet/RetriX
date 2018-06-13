@@ -1,20 +1,21 @@
-﻿using System.Threading.Tasks;
+﻿using RetriX.Shared.StreamProviders;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace RetriX.Shared.Test.StreamProviders
 {
-    /*public class ArchiveStreamProviderTest : FileProviderTestBase<ArchiveStreamProvider>
+    public class ArchiveStreamProviderTest : StreamProviderTestBase<ArchiveStreamProvider>
     {
-        protected override ArchiveStreamProvider InstantiateTarget()
+        protected override Task<ArchiveStreamProvider> GetTargetAsync()
         {
             var file = GetTestFilesFolderAsync().Result.GetFileAsync("Archive.zip").Result;
-            return new ArchiveStreamProvider("scheme:\\", file);
+            return Task.FromResult(new ArchiveStreamProvider("scheme:\\", file));
         }
 
         [Fact]
         public Task ListingEntriesWorks()
         {
-            return ListingEntriesWorks(4);
+            return ListingEntriesWorksInternal(4);
         }
 
         [Theory]
@@ -28,5 +29,5 @@ namespace RetriX.Shared.Test.StreamProviders
         {
             return OpeningFileWorksInternal(path, expectedSuccess);
         }
-    }*/
+    }
 }

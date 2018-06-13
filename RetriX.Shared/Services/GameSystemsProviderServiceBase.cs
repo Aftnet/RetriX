@@ -55,21 +55,20 @@ namespace RetriX.Shared.Services
             string virtualMainFilePath = null;
             var provider = default(IStreamProvider);
 
-            if (core.NativeArchiveSupport || !ArchiveStreamProvider.SupportedExtensions.Contains(Path.GetExtension(file.Name)))
+            if (!ArchiveStreamProvider.SupportedExtensions.Contains(Path.GetExtension(file.Name)))
             {
-                virtualMainFilePath = $"{vfsRomPath}{Path.DirectorySeparatorChar}{file.Name}";
+                virtualMainFilePath = Path.Combine(vfsRomPath, file.Name);
                 provider = new SingleFileStreamProvider(virtualMainFilePath, file);
                 if (rootFolder != null)
                 {
                     virtualMainFilePath = file.FullName.Substring(rootFolder.FullName.Length + 1);
-                    virtualMainFilePath = $"{vfsRomPath}{Path.DirectorySeparatorChar}{virtualMainFilePath}";
+                    virtualMainFilePath = Path.Combine(vfsRomPath, virtualMainFilePath);
                     provider = new FolderStreamProvider(vfsRomPath, rootFolder);
                 }
             }
             else
             {
                 var archiveProvider = new ArchiveStreamProvider(vfsRomPath, file);
-                await archiveProvider.InitializeAsync();
                 provider = archiveProvider;
                 var entries = await provider.ListEntriesAsync();
                 virtualMainFilePath = entries.FirstOrDefault(d => system.SupportedExtensions.Contains(Path.GetExtension(d)));

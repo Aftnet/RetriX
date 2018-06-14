@@ -17,6 +17,7 @@
     <PackageReference Include="Plugin.VersionTracking" Version="2.1.0" />
     <PackageReference Include="System.IO.Compression.ZipFile" Version="4.3.0" />
     <PackageReference Include="System.Security.Cryptography.Algorithms" Version="4.3.1" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
     <PackageReference Include="Xam.Plugin.FileSystem" Version="1.0.8" />
     <PackageReference Include="Xam.Plugins.Notifier" Version="2.1.0" />
     <PackageReference Include="Xam.Plugins.Settings" Version="3.1.1" />

@@ -181,6 +181,24 @@ namespace RetriX.Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This archive contains no game file compatible with the selected system.
+        /// </summary>
+        internal static string NoCompatibleFileInArchiveAlertMessage {
+            get {
+                return ResourceManager.GetString("NoCompatibleFileInArchiveAlertMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No compatible file found.
+        /// </summary>
+        internal static string NoCompatibleFileInArchiveAlertTitle {
+            get {
+                return ResourceManager.GetString("NoCompatibleFileInArchiveAlertTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The folder you selected does not contain the game file you are trying to open. Try again..
         /// </summary>
         internal static string SelectFolderInvalidAlertMessage {

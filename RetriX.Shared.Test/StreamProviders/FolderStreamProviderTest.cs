@@ -4,11 +4,11 @@ using Xunit;
 
 namespace RetriX.Shared.Test.StreamProviders
 {
-    public class FolderStreamProviderTest : StreamProviderTestBase
+    public class FolderStreamProviderTest : StreamProviderTestBase<FolderStreamProvider>
     {
         const string HandledScheme = "SCHEME";
 
-        protected override async Task<IStreamProvider> GetTargetAsync()
+        protected override async Task<FolderStreamProvider> GetTargetAsync()
         {
             var folder = await GetTestFilesFolderAsync();
             return new FolderStreamProvider(HandledScheme, folder);

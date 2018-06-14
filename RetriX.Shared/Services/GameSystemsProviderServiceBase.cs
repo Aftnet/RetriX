@@ -1,4 +1,5 @@
 ﻿using Plugin.FileSystem.Abstractions;
+using RetriX.Shared.Models;
 using RetriX.Shared.StreamProviders;
 using RetriX.Shared.ViewModels;
 using System;
@@ -26,24 +27,61 @@ namespace RetriX.Shared.Services
             systems = new Lazy<IReadOnlyList<GameSystemViewModel>>(() => GenerateSystemsList(FileSystem), LazyThreadSafetyMode.PublicationOnly);
         }
 
-        public Task<GamePlayerViewModel.Parameter> GenerateGameLaunchEnvironmentAsync(IFileInfo file)
+        public async Task<IReadOnlyList<GameSystemViewModel>> GetCompatibleSystems(IFileInfo file)
         {
-            var extension = Path.GetExtension(file.Name);
-            var compatibleSystems = Systems.Where(d => d.SupportedExtensions.Contains(extension)).ToArray();
-            if (compatibleSystems.Length != 1)
+            if (file == null)
             {
-                return Task.FromResult(default(GamePlayerViewModel.Parameter));
+                return new GameSystemViewModel[0];
             }
 
-            return GenerateGameLaunchEnvironmentAsync(compatibleSystems.First(), file, null);
+            var output = new HashSet<GameSystemViewModel>();
+            if (ArchiveStreamProvider.SupportedExtensions.Contains(Path.GetExtension(file.Name)))
+            {
+                IEnumerable<string> entries;
+                using (var provider = new ArchiveStreamProvider($"test{Path.DirectorySeparatorChar}", file))
+                {
+                    entries = await provider.ListEntriesAsync();
+                }
+
+                output = await Task.Run(() =>
+                {
+                    var archiveOutput = new HashSet<GameSystemViewModel>();
+                    var entriesExtensions = new HashSet<string>(entries.Select(d => Path.GetExtension(d)));
+                    foreach (var i in Systems)
+                    {
+                        foreach (var j in entriesExtensions)
+                        {
+                            if (i.SupportedExtensions.Contains(j))
+                            {
+                                archiveOutput.Add(i);
+                            }
+                        }
+                    }
+
+                    return archiveOutput;
+                });
+            }
+
+            var nativelySupportingSystems = Systems.Where(d => d.SupportedExtensions.Contains(Path.GetExtension(file.Name))).ToArray();
+            foreach (var i in nativelySupportingSystems)
+            {
+                output.Add(i);
+            }
+
+            return output.OrderBy(d => d.Name).ToList();
         }
 
-        public async Task<GamePlayerViewModel.Parameter> GenerateGameLaunchEnvironmentAsync(GameSystemViewModel system, IFileInfo file, IDirectoryInfo rootFolder)
+        public async Task<(GameLaunchEnvironment, GameLaunchEnvironment.GenerateResult)> GenerateGameLaunchEnvironmentAsync(GameSystemViewModel system, IFileInfo file, IDirectoryInfo rootFolder)
         {
             var dependenciesMet = await system.CheckDependenciesMetAsync();
-            if (!dependenciesMet || (system.CheckRootFolderRequired(file) && rootFolder == null))
+            if (!dependenciesMet)
             {
-                return null;
+                return (default(GameLaunchEnvironment), GameLaunchEnvironment.GenerateResult.DependenciesUnmet);
+            }
+
+            if (system.CheckRootFolderRequired(file) && rootFolder == null)
+            {
+                return (default(GameLaunchEnvironment), GameLaunchEnvironment.GenerateResult.RootFolderRequired);
             }
 
             var vfsRomPath = "ROM";
@@ -54,25 +92,27 @@ namespace RetriX.Shared.Services
 
             string virtualMainFilePath = null;
             var provider = default(IStreamProvider);
-
-            if (core.NativeArchiveSupport || !ArchiveStreamProvider.SupportedExtensions.Contains(Path.GetExtension(file.Name)))
+            if (ArchiveStreamProvider.SupportedExtensions.Contains(Path.GetExtension(file.Name)) && core.NativeArchiveSupport == false)
             {
-                virtualMainFilePath = $"{vfsRomPath}{Path.DirectorySeparatorChar}{file.Name}";
-                provider = new SingleFileStreamProvider(virtualMainFilePath, file);
-                if (rootFolder != null)
+                var archiveProvider = new ArchiveStreamProvider(vfsRomPath, file);
+                provider = archiveProvider;
+                var entries = await provider.ListEntriesAsync();
+                virtualMainFilePath = entries.FirstOrDefault(d => system.SupportedExtensions.Contains(Path.GetExtension(d)));
+                if (string.IsNullOrEmpty(virtualMainFilePath))
                 {
-                    virtualMainFilePath = file.FullName.Substring(rootFolder.FullName.Length + 1);
-                    virtualMainFilePath = $"{vfsRomPath}{Path.DirectorySeparatorChar}{virtualMainFilePath}";
-                    provider = new FolderStreamProvider(vfsRomPath, rootFolder);
+                    return (default(GameLaunchEnvironment), GameLaunchEnvironment.GenerateResult.NoMainFileFound);
                 }
             }
             else
             {
-                var archiveProvider = new ArchiveStreamProvider(vfsRomPath, file);
-                await archiveProvider.InitializeAsync();
-                provider = archiveProvider;
-                var entries = await provider.ListEntriesAsync();
-                virtualMainFilePath = entries.FirstOrDefault(d => system.SupportedExtensions.Contains(Path.GetExtension(d)));
+                virtualMainFilePath = Path.Combine(vfsRomPath, file.Name);
+                provider = new SingleFileStreamProvider(virtualMainFilePath, file);
+                if (rootFolder != null)
+                {
+                    virtualMainFilePath = file.FullName.Substring(rootFolder.FullName.Length + 1);
+                    virtualMainFilePath = Path.Combine(vfsRomPath, virtualMainFilePath);
+                    provider = new FolderStreamProvider(vfsRomPath, rootFolder);
+                }
             }
 
             var systemFolder = await system.GetSystemDirectoryAsync();
@@ -84,7 +124,7 @@ namespace RetriX.Shared.Services
 
             provider = new CombinedStreamProvider(new HashSet<IStreamProvider>() { provider, systemProvider, saveProvider });
 
-            return new GamePlayerViewModel.Parameter(core, provider, virtualMainFilePath);
+            return (new GameLaunchEnvironment(core, provider, virtualMainFilePath), GameLaunchEnvironment.GenerateResult.Success);
         }
     }
 }

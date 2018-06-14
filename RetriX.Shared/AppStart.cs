@@ -1,9 +1,11 @@
 ﻿using MvvmCross.Core.Navigation;
 using MvvmCross.Core.ViewModels;
 using Plugin.FileSystem.Abstractions;
+using RetriX.Shared.Models;
 using RetriX.Shared.Presentation;
 using RetriX.Shared.Services;
 using RetriX.Shared.ViewModels;
+using System.Linq;
 
 namespace RetriX.Shared
 {
@@ -29,14 +31,23 @@ namespace RetriX.Shared
                 return;
             }
 
-            var param = await GameSystemsProviderService.GenerateGameLaunchEnvironmentAsync(file);
-            if (param != null && Presenter.CurrentViewModel is GamePlayerViewModel)
+            if (Presenter.CurrentViewModel is GamePlayerViewModel)
             {
-                var currentGamePlayerVM = Presenter.CurrentViewModel as GamePlayerViewModel;
-                currentGamePlayerVM.Prepare(param);
-                await currentGamePlayerVM.Initialize();
+                var compatibleSystems = await GameSystemsProviderService.GetCompatibleSystems(file);
+                if (compatibleSystems.Count == 1)
+                {
+                    var result = await GameSystemsProviderService.GenerateGameLaunchEnvironmentAsync(compatibleSystems.First(), file, null);
+                    if (result.Item2 == GameLaunchEnvironment.GenerateResult.Success)
+                    {
+                        var currentGamePlayerVM = Presenter.CurrentViewModel as GamePlayerViewModel;
+                        currentGamePlayerVM.Prepare(result.Item1);
+                        await currentGamePlayerVM.Initialize();
+                        return;
+                    }
+                }
             }
-            else if (Presenter.CurrentViewModel is GameSystemSelectionViewModel)
+
+            if (Presenter.CurrentViewModel is GameSystemSelectionViewModel)
             {
                 var currentSystemSelectionVM = Presenter.CurrentViewModel as GameSystemSelectionViewModel;
                 currentSystemSelectionVM.Prepare(file);

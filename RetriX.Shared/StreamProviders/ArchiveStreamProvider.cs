@@ -1,9 +1,7 @@
 ﻿using Plugin.FileSystem.Abstractions;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace RetriX.Shared.StreamProviders
@@ -14,7 +12,10 @@ namespace RetriX.Shared.StreamProviders
 
         private string HandledScheme { get; }
         private IFileInfo ArchiveFile { get; }
-        private IDictionary<string, byte[]> EntriesBufferMapping { get; } = new Dictionary<string, byte[]>();
+        private ZipArchive Archive { get; set; }
+
+        private IDictionary<string, ZipArchiveEntry> EntriesMapping { get; } = new SortedDictionary<string, ZipArchiveEntry>();
+        private HashSet<Stream> OpenStreams { get; } = new HashSet<Stream>();
 
         public ArchiveStreamProvider(string handledScheme, IFileInfo archiveFile)
         {
@@ -24,43 +25,67 @@ namespace RetriX.Shared.StreamProviders
 
         public void Dispose()
         {
+            Archive?.Dispose();
+            foreach (var i in OpenStreams)
+            {
+                i.Dispose();
+            }
+
+            OpenStreams.Clear();
         }
 
-        public async Task InitializeAsync()
+        public async Task<IEnumerable<string>> ListEntriesAsync()
         {
-            var stream = await ArchiveFile.OpenAsync(FileAccess.Read);
-            using (var archive = new ZipArchive(stream, ZipArchiveMode.Read))
+            await InitializeAsync();
+            return EntriesMapping.Keys;
+        }
+
+        public async Task<Stream> OpenFileStreamAsync(string path, FileAccess accessType)
+        {
+            await InitializeAsync();
+            if (!EntriesMapping.Keys.Contains(path))
             {
-                foreach (var i in archive.Entries)
+                return default(Stream);
+            }
+
+            var entry = EntriesMapping[path];
+            using (var archiveStream = entry.Open())
+            {
+                var backingStore = new byte[entry.Length];
+                using (var tempStream = new MemoryStream(backingStore, true))
                 {
-                    using (var entryStream = i.Open())
-                    {
-                        var memoryStream = new MemoryStream();
-                        await entryStream.CopyToAsync(memoryStream);
-                        EntriesBufferMapping.Add(Path.Combine(HandledScheme,i.FullName), memoryStream.ToArray());
-                    }
+                    await archiveStream.CopyToAsync(tempStream);
                 }
+
+                var writeable = accessType == FileAccess.ReadWrite || accessType == FileAccess.Write;
+                var output = new MemoryStream(backingStore, writeable);
+                OpenStreams.Add(output);
+                return output;
             }
-        }
-
-        public Task<IEnumerable<string>> ListEntriesAsync()
-        {
-            return Task.FromResult(EntriesBufferMapping.Keys.OrderBy(d => d) as IEnumerable<string>);
-        }
-
-        public Task<Stream> OpenFileStreamAsync(string path, FileAccess accessType)
-        {
-            if (!EntriesBufferMapping.Keys.Contains(path, StringComparer.OrdinalIgnoreCase))
-            {
-                return Task.FromResult(null as Stream);
-            }
-
-            var output = new MemoryStream(EntriesBufferMapping[path]);
-            return Task.FromResult(output as Stream);
         }
 
         public void CloseStream(Stream stream)
         {
+            if (OpenStreams.Contains(stream))
+            {
+                stream.Dispose();
+                OpenStreams.Remove(stream);
+            }
+        }
+
+        private async Task InitializeAsync()
+        {
+            if (Archive != null)
+            {
+                return;
+            }
+
+            var stream = await ArchiveFile.OpenAsync(FileAccess.Read);
+            Archive = new ZipArchive(stream, ZipArchiveMode.Read, false);
+            foreach (var i in Archive.Entries)
+            {
+                EntriesMapping.Add(Path.Combine(HandledScheme, i.FullName.Replace('/', Path.DirectorySeparatorChar)), i);
+            }
         }
     }
 }

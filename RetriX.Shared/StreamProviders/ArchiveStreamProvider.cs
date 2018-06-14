@@ -46,11 +46,17 @@ namespace RetriX.Shared.StreamProviders
                 return default(Stream);
             }
 
-            using (var archiveStream = EntriesMapping[path].Open())
+            var entry = EntriesMapping[path];
+            using (var archiveStream = entry.Open())
             {
-                var output = new MemoryStream();
-                await archiveStream.CopyToAsync(output);
-                output.Position = 0;
+                var backingStore = new byte[entry.Length];
+                using (var tempStream = new MemoryStream(backingStore, true))
+                {
+                    await archiveStream.CopyToAsync(tempStream);
+                }
+
+                var writeable = accessType == FileAccess.ReadWrite || accessType == FileAccess.Write;
+                var output = new MemoryStream(backingStore, writeable);
                 OpenStreams.Add(output);
                 return output;
             }

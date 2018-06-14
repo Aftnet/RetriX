@@ -27,16 +27,48 @@ namespace RetriX.Shared.Services
             systems = new Lazy<IReadOnlyList<GameSystemViewModel>>(() => GenerateSystemsList(FileSystem), LazyThreadSafetyMode.PublicationOnly);
         }
 
-        public Task<IReadOnlyList<GameSystemViewModel>> GetCompatibleSystems(IFileInfo file)
+        public async Task<IReadOnlyList<GameSystemViewModel>> GetCompatibleSystems(IFileInfo file)
         {
-            IReadOnlyList<GameSystemViewModel> output = new GameSystemViewModel[0];
             if (file == null)
             {
-                return Task.FromResult(output);
+                return new GameSystemViewModel[0];
             }
 
-            output = Systems.Where(d => d.SupportedExtensions.Contains(Path.GetExtension(file.Name))).ToArray();
-            return Task.FromResult(output);
+            var output = new HashSet<GameSystemViewModel>();
+            if (ArchiveStreamProvider.SupportedExtensions.Contains(Path.GetExtension(file.Name)))
+            {
+                IEnumerable<string> entries;
+                using (var provider = new ArchiveStreamProvider($"test{Path.DirectorySeparatorChar}", file))
+                {
+                    entries = await provider.ListEntriesAsync();
+                }
+
+                output = await Task.Run(() =>
+                {
+                    var archiveOutput = new HashSet<GameSystemViewModel>();
+                    var entriesExtensions = new HashSet<string>(entries.Select(d => Path.GetExtension(d)));
+                    foreach (var i in Systems)
+                    {
+                        foreach (var j in entriesExtensions)
+                        {
+                            if (i.SupportedExtensions.Contains(j))
+                            {
+                                archiveOutput.Add(i);
+                            }
+                        }
+                    }
+
+                    return archiveOutput;
+                });
+            }
+
+            var nativelySupportingSystems = Systems.Where(d => d.SupportedExtensions.Contains(Path.GetExtension(file.Name))).ToArray();
+            foreach (var i in nativelySupportingSystems)
+            {
+                output.Add(i);
+            }
+
+            return output.OrderBy(d => d.Name).ToList();
         }
 
         public async Task<(GameLaunchEnvironment, GameLaunchEnvironment.GenerateResult)> GenerateGameLaunchEnvironmentAsync(GameSystemViewModel system, IFileInfo file, IDirectoryInfo rootFolder)

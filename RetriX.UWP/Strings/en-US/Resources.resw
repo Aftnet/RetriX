@@ -237,4 +237,7 @@
   <data name="NNFilteringMenuFlyout.Text" xml:space="preserve">
     <value>None</value>
   </data>
+  <data name="ZipRomDescription.Text" xml:space="preserve">
+    <value>Zip compressed Rom</value>
+  </data>
 </root>

@@ -30,6 +30,8 @@ namespace RetriX.Shared.StreamProviders
             {
                 i.Dispose();
             }
+
+            OpenStreams.Clear();
         }
 
         public async Task<IEnumerable<string>> ListEntriesAsync()

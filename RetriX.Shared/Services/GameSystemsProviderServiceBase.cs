@@ -1,4 +1,5 @@
 ﻿using Plugin.FileSystem.Abstractions;
+using RetriX.Shared.Models;
 using RetriX.Shared.StreamProviders;
 using RetriX.Shared.ViewModels;
 using System;
@@ -26,24 +27,29 @@ namespace RetriX.Shared.Services
             systems = new Lazy<IReadOnlyList<GameSystemViewModel>>(() => GenerateSystemsList(FileSystem), LazyThreadSafetyMode.PublicationOnly);
         }
 
-        public Task<GamePlayerViewModel.Parameter> GenerateGameLaunchEnvironmentAsync(IFileInfo file)
+        public Task<IReadOnlyList<GameSystemViewModel>> GetCompatibleSystems(IFileInfo file)
         {
-            var extension = Path.GetExtension(file.Name);
-            var compatibleSystems = Systems.Where(d => d.SupportedExtensions.Contains(extension)).ToArray();
-            if (compatibleSystems.Length != 1)
+            IReadOnlyList<GameSystemViewModel> output = new GameSystemViewModel[0];
+            if (file == null)
             {
-                return Task.FromResult(default(GamePlayerViewModel.Parameter));
+                return Task.FromResult(output);
             }
 
-            return GenerateGameLaunchEnvironmentAsync(compatibleSystems.First(), file, null);
+            output = Systems.Where(d => d.SupportedExtensions.Contains(Path.GetExtension(file.Name))).ToArray();
+            return Task.FromResult(output);
         }
 
-        public async Task<GamePlayerViewModel.Parameter> GenerateGameLaunchEnvironmentAsync(GameSystemViewModel system, IFileInfo file, IDirectoryInfo rootFolder)
+        public async Task<(GameLaunchEnvironment, GameLaunchEnvironment.GenerateResult)> GenerateGameLaunchEnvironmentAsync(GameSystemViewModel system, IFileInfo file, IDirectoryInfo rootFolder)
         {
             var dependenciesMet = await system.CheckDependenciesMetAsync();
-            if (!dependenciesMet || (system.CheckRootFolderRequired(file) && rootFolder == null))
+            if (!dependenciesMet)
             {
-                return null;
+                return (default(GameLaunchEnvironment), GameLaunchEnvironment.GenerateResult.DependenciesUnmet);
+            }
+
+            if (system.CheckRootFolderRequired(file) && rootFolder == null)
+            {
+                return (default(GameLaunchEnvironment), GameLaunchEnvironment.GenerateResult.RootFolderRequired);
             }
 
             var vfsRomPath = "ROM";
@@ -54,8 +60,14 @@ namespace RetriX.Shared.Services
 
             string virtualMainFilePath = null;
             var provider = default(IStreamProvider);
-
-            if (!ArchiveStreamProvider.SupportedExtensions.Contains(Path.GetExtension(file.Name)))
+            if (ArchiveStreamProvider.SupportedExtensions.Contains(Path.GetExtension(file.Name)) && core.NativeArchiveSupport == false)
+            {
+                var archiveProvider = new ArchiveStreamProvider(vfsRomPath, file);
+                provider = archiveProvider;
+                var entries = await provider.ListEntriesAsync();
+                virtualMainFilePath = entries.FirstOrDefault(d => system.SupportedExtensions.Contains(Path.GetExtension(d)));
+            }
+            else
             {
                 virtualMainFilePath = Path.Combine(vfsRomPath, file.Name);
                 provider = new SingleFileStreamProvider(virtualMainFilePath, file);
@@ -65,13 +77,6 @@ namespace RetriX.Shared.Services
                     virtualMainFilePath = Path.Combine(vfsRomPath, virtualMainFilePath);
                     provider = new FolderStreamProvider(vfsRomPath, rootFolder);
                 }
-            }
-            else
-            {
-                var archiveProvider = new ArchiveStreamProvider(vfsRomPath, file);
-                provider = archiveProvider;
-                var entries = await provider.ListEntriesAsync();
-                virtualMainFilePath = entries.FirstOrDefault(d => system.SupportedExtensions.Contains(Path.GetExtension(d)));
             }
 
             var systemFolder = await system.GetSystemDirectoryAsync();
@@ -83,7 +88,7 @@ namespace RetriX.Shared.Services
 
             provider = new CombinedStreamProvider(new HashSet<IStreamProvider>() { provider, systemProvider, saveProvider });
 
-            return new GamePlayerViewModel.Parameter(core, provider, virtualMainFilePath);
+            return (new GameLaunchEnvironment(core, provider, virtualMainFilePath), GameLaunchEnvironment.GenerateResult.Success);
         }
     }
 }

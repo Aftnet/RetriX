@@ -2,8 +2,10 @@
 using MvvmCross.Core.Navigation;
 using MvvmCross.Core.ViewModels;
 using Plugin.FileSystem.Abstractions;
+using RetriX.Shared.Models;
 using RetriX.Shared.Services;
 using RetriX.Shared.StreamProviders;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -60,23 +62,25 @@ namespace RetriX.Shared.ViewModels
         public override async Task Initialize()
         {
             //Find compatible systems for file extension
-            var extension = SelectedGameFile != null ? Path.GetExtension(SelectedGameFile.Name) : string.Empty;
-            var compatibleSystems = GameSystemsProviderService.Systems.Where(d => d.SupportedExtensions.Contains(extension));
-
-            //If none, do nothing
-            if (!compatibleSystems.Any())
+            var compatibleSystems = await GameSystemsProviderService.GetCompatibleSystems(SelectedGameFile);
+            switch (compatibleSystems.Count)
             {
-                return;
+                case 0:
+                    {
+                        ResetSystemsSelection();
+                        break;
+                    }
+                case 1:
+                    {
+                        await StartGameAsync(compatibleSystems.Single(), SelectedGameFile);
+                        break;
+                    }
+                default:
+                    {
+                        GameSystems = compatibleSystems.ToArray();
+                        break;
+                    }
             }
-
-            //If just one, start game with it
-            if (compatibleSystems.Count() == 1)
-            {
-                await StartGameAsync(compatibleSystems.Single(), SelectedGameFile);
-                return;
-            }
-
-            GameSystems = compatibleSystems.ToArray();
         }
 
         private async void GameSystemSelectedHandler(GameSystemViewModel system)
@@ -96,20 +100,11 @@ namespace RetriX.Shared.ViewModels
 
         private async Task StartGameAsync(GameSystemViewModel system, IFileInfo file)
         {
-            var dependenciesMet = await system.CheckDependenciesMetAsync();
-            if (!dependenciesMet)
-            {
-                ResetSystemsSelection();
-                await DialogsService.AlertAsync(Resources.Strings.SystemUnmetDependenciesAlertTitle, Resources.Strings.SystemUnmetDependenciesAlertMessage);
-                return;
-            }
-
-            var folderNeeded = system.CheckRootFolderRequired(file);
-            var folder = default(IDirectoryInfo);
-            if (folderNeeded)
+            var result = await GameSystemsProviderService.GenerateGameLaunchEnvironmentAsync(system, file, null);
+            if (result.Item2 == GameLaunchEnvironment.GenerateResult.RootFolderRequired)
             {
                 await DialogsService.AlertAsync(Resources.Strings.SelectFolderRequestAlertTitle, Resources.Strings.SelectFolderRequestAlertMessage);
-                folder = await FileSystem.PickDirectoryAsync();
+                var folder = await FileSystem.PickDirectoryAsync();
                 if (folder == null)
                 {
                     ResetSystemsSelection();
@@ -122,11 +117,27 @@ namespace RetriX.Shared.ViewModels
                     await DialogsService.AlertAsync(Resources.Strings.SelectFolderInvalidAlertTitle, Resources.Strings.SelectFolderInvalidAlertMessage);
                     return;
                 }
+
+                result = await GameSystemsProviderService.GenerateGameLaunchEnvironmentAsync(system, file, folder);
             }
 
-            var param = await GameSystemsProviderService.GenerateGameLaunchEnvironmentAsync(system, file, folder);
-            await NavigationService.Navigate<GamePlayerViewModel, GamePlayerViewModel.Parameter>(param);
-            ResetSystemsSelection();
+            switch (result.Item2)
+            {
+                case GameLaunchEnvironment.GenerateResult.DependenciesUnmet:
+                    {
+                        ResetSystemsSelection();
+                        await DialogsService.AlertAsync(Resources.Strings.SystemUnmetDependenciesAlertTitle, Resources.Strings.SystemUnmetDependenciesAlertMessage);
+                        return;
+                    }
+                case GameLaunchEnvironment.GenerateResult.Success:
+                    {
+                        await NavigationService.Navigate<GamePlayerViewModel, GameLaunchEnvironment>(result.Item1);
+                        ResetSystemsSelection();
+                        return;
+                    }
+                default:
+                    throw new Exception("This should never happen");
+            }
         }
 
         private void ResetSystemsSelection()

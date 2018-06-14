@@ -1,32 +1,16 @@
-﻿using LibRetriX;
-using MvvmCross.Core.Navigation;
+﻿using MvvmCross.Core.Navigation;
 using MvvmCross.Core.ViewModels;
-using MvvmCross.Platform.Core;
 using Plugin.Settings.Abstractions;
+using RetriX.Shared.Models;
 using RetriX.Shared.Services;
-using RetriX.Shared.StreamProviders;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace RetriX.Shared.ViewModels
 {
-    public class GamePlayerViewModel : MvxViewModel<GamePlayerViewModel.Parameter>
+    public class GamePlayerViewModel : MvxViewModel<GameLaunchEnvironment>
     {
-        public class Parameter
-        {
-            public ICore Core { get; }
-            public IStreamProvider StreamProvider { get; }       
-            public string MainFilePath { get; }
-
-            public Parameter(ICore core, IStreamProvider streamProvider, string mainFilePath)
-            {
-                Core = core;
-                StreamProvider = streamProvider;
-                MainFilePath = mainFilePath;
-            }
-        }
-
         private const string CurrentFilterKey = "CurrentFilter";
         private static readonly TimeSpan PriodicChecksInterval = TimeSpan.FromSeconds(2);
         private static readonly TimeSpan UIHidingTime = TimeSpan.FromSeconds(4);
@@ -202,7 +186,7 @@ namespace RetriX.Shared.ViewModels
         }
 
 
-        public override void Prepare(Parameter parameter)
+        public override void Prepare(GameLaunchEnvironment parameter)
         {
             EmulationService.StartGameAsync(parameter.Core, parameter.StreamProvider, parameter.MainFilePath);
         }

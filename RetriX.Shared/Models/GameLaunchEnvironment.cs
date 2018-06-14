@@ -5,7 +5,7 @@ namespace RetriX.Shared.Models
 {
     public class GameLaunchEnvironment
     {
-        public enum GenerateResult { Success, RootFolderRequired, DependenciesUnmet };
+        public enum GenerateResult { Success, RootFolderRequired, DependenciesUnmet, NoMainFileFound };
 
         public ICore Core { get; }
         public IStreamProvider StreamProvider { get; }

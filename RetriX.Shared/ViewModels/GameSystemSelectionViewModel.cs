@@ -103,7 +103,7 @@ namespace RetriX.Shared.ViewModels
             var result = await GameSystemsProviderService.GenerateGameLaunchEnvironmentAsync(system, file, null);
             if (result.Item2 == GameLaunchEnvironment.GenerateResult.RootFolderRequired)
             {
-                await DialogsService.AlertAsync(Resources.Strings.SelectFolderRequestAlertTitle, Resources.Strings.SelectFolderRequestAlertMessage);
+                await DialogsService.AlertAsync(Resources.Strings.SelectFolderRequestAlertMessage, Resources.Strings.SelectFolderRequestAlertTitle);
                 var folder = await FileSystem.PickDirectoryAsync();
                 if (folder == null)
                 {
@@ -114,7 +114,7 @@ namespace RetriX.Shared.ViewModels
                 if (!Path.GetDirectoryName(file.FullName).StartsWith(folder.FullName))
                 {
                     ResetSystemsSelection();
-                    await DialogsService.AlertAsync(Resources.Strings.SelectFolderInvalidAlertTitle, Resources.Strings.SelectFolderInvalidAlertMessage);
+                    await DialogsService.AlertAsync(Resources.Strings.SelectFolderInvalidAlertMessage, Resources.Strings.SelectFolderInvalidAlertTitle);
                     return;
                 }
 
@@ -126,7 +126,13 @@ namespace RetriX.Shared.ViewModels
                 case GameLaunchEnvironment.GenerateResult.DependenciesUnmet:
                     {
                         ResetSystemsSelection();
-                        await DialogsService.AlertAsync(Resources.Strings.SystemUnmetDependenciesAlertTitle, Resources.Strings.SystemUnmetDependenciesAlertMessage);
+                        await DialogsService.AlertAsync(Resources.Strings.SystemUnmetDependenciesAlertMessage, Resources.Strings.SystemUnmetDependenciesAlertTitle);
+                        return;
+                    }
+                case GameLaunchEnvironment.GenerateResult.NoMainFileFound:
+                    {
+                        ResetSystemsSelection();
+                        await DialogsService.AlertAsync(Resources.Strings.NoCompatibleFileInArchiveAlertMessage, Resources.Strings.NoCompatibleFileInArchiveAlertTitle);
                         return;
                     }
                 case GameLaunchEnvironment.GenerateResult.Success:

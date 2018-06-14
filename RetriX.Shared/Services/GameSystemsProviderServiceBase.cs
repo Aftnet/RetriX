@@ -66,6 +66,10 @@ namespace RetriX.Shared.Services
                 provider = archiveProvider;
                 var entries = await provider.ListEntriesAsync();
                 virtualMainFilePath = entries.FirstOrDefault(d => system.SupportedExtensions.Contains(Path.GetExtension(d)));
+                if (string.IsNullOrEmpty(virtualMainFilePath))
+                {
+                    return (default(GameLaunchEnvironment), GameLaunchEnvironment.GenerateResult.NoMainFileFound);
+                }
             }
             else
             {

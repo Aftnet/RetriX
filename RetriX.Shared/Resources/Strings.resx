@@ -242,4 +242,10 @@ Restart RetriX and try again.</value>
   <data name="SystemUnmetDependenciesAlertTitle" xml:space="preserve">
     <value>Required files missing</value>
   </data>
+  <data name="NoCompatibleFileInArchiveAlertMessage" xml:space="preserve">
+    <value>This archive contains no game file compatible with the selected system</value>
+  </data>
+  <data name="NoCompatibleFileInArchiveAlertTitle" xml:space="preserve">
+    <value>No compatible file found</value>
+  </data>
 </root>

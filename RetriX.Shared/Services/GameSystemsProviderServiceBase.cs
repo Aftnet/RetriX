@@ -24,7 +24,7 @@ namespace RetriX.Shared.Services
         {
             FileSystem = fileSystem;
 
-            systems = new Lazy<IEnumerable<GameSystemViewModel>>(() => GenerateSystemsList(FileSystem), LazyThreadSafetyMode.PublicationOnly);
+            systems = new Lazy<IEnumerable<GameSystemViewModel>>(() => GenerateSystemsList(FileSystem).ToArray(), LazyThreadSafetyMode.PublicationOnly);
         }
 
         public async Task<IReadOnlyList<GameSystemViewModel>> GetCompatibleSystems(IFileInfo file)

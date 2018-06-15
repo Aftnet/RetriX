@@ -23,8 +23,8 @@ namespace RetriX.Shared.ViewModels
 
         private IFileInfo SelectedGameFile { get; set; }
 
-        private IReadOnlyList<GameSystemViewModel> gameSystems;
-        public IReadOnlyList<GameSystemViewModel> GameSystems
+        private IEnumerable<GameSystemViewModel> gameSystems;
+        public IEnumerable<GameSystemViewModel> GameSystems
         {
             get => gameSystems;
             private set => SetProperty(ref gameSystems, value);

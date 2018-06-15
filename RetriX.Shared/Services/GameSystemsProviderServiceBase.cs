@@ -13,18 +13,18 @@ namespace RetriX.Shared.Services
 {
     public abstract class GameSystemsProviderServiceBase : IGameSystemsProviderService
     {
-        protected abstract IReadOnlyList<GameSystemViewModel> GenerateSystemsList(IFileSystem fileSystem);
+        protected abstract IEnumerable<GameSystemViewModel> GenerateSystemsList(IFileSystem fileSystem);
 
         private IFileSystem FileSystem { get; }
 
-        protected Lazy<IReadOnlyList<GameSystemViewModel>> systems { get; }
-        public IReadOnlyList<GameSystemViewModel> Systems => systems.Value;
+        protected Lazy<IEnumerable<GameSystemViewModel>> systems { get; }
+        public IEnumerable<GameSystemViewModel> Systems => systems.Value;
 
         public GameSystemsProviderServiceBase(IFileSystem fileSystem)
         {
             FileSystem = fileSystem;
 
-            systems = new Lazy<IReadOnlyList<GameSystemViewModel>>(() => GenerateSystemsList(FileSystem), LazyThreadSafetyMode.PublicationOnly);
+            systems = new Lazy<IEnumerable<GameSystemViewModel>>(() => GenerateSystemsList(FileSystem), LazyThreadSafetyMode.PublicationOnly);
         }
 
         public async Task<IReadOnlyList<GameSystemViewModel>> GetCompatibleSystems(IFileInfo file)

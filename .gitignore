@@ -260,6 +260,6 @@ paket-files/
 __pycache__/
 *.pyc
 
-TestRoms/
+LibRetriX/
 
 **/Generated Files

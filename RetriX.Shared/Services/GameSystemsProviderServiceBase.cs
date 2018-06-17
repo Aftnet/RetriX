@@ -35,6 +35,7 @@ namespace RetriX.Shared.Services
             }
 
             var output = new HashSet<GameSystemViewModel>();
+            bool shouldAddNativelySupportingSystems = true;
             if (ArchiveStreamProvider.SupportedExtensions.Contains(Path.GetExtension(file.Name)))
             {
                 IEnumerable<string> entries;
@@ -43,9 +44,8 @@ namespace RetriX.Shared.Services
                     entries = await provider.ListEntriesAsync();
                 }
 
-                output = await Task.Run(() =>
+                await Task.Run(() =>
                 {
-                    var archiveOutput = new HashSet<GameSystemViewModel>();
                     var entriesExtensions = new HashSet<string>(entries.Select(d => Path.GetExtension(d)));
                     foreach (var i in Systems)
                     {
@@ -53,19 +53,26 @@ namespace RetriX.Shared.Services
                         {
                             if (i.SupportedExtensions.Contains(j))
                             {
-                                archiveOutput.Add(i);
+                                output.Add(i);
                             }
                         }
                     }
 
-                    return archiveOutput;
+                    //One extension in archive and one compatible core found. Skip adding systems natively supporting archives.
+                    if (entriesExtensions.Count == 1 && output.Any())
+                    {
+                        shouldAddNativelySupportingSystems = false;
+                    }
                 });
             }
 
-            var nativelySupportingSystems = Systems.Where(d => d.SupportedExtensions.Contains(Path.GetExtension(file.Name))).ToArray();
-            foreach (var i in nativelySupportingSystems)
+            if (shouldAddNativelySupportingSystems)
             {
-                output.Add(i);
+                var nativelySupportingSystems = Systems.Where(d => d.SupportedExtensions.Contains(Path.GetExtension(file.Name))).ToArray();
+                foreach (var i in nativelySupportingSystems)
+                {
+                    output.Add(i);
+                }
             }
 
             return output.OrderBy(d => d.Name).ToList();

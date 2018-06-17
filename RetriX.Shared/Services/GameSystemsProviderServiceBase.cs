@@ -71,17 +71,17 @@ namespace RetriX.Shared.Services
             return output.OrderBy(d => d.Name).ToList();
         }
 
-        public async Task<(GameLaunchEnvironment, GameLaunchEnvironment.GenerateResult)> GenerateGameLaunchEnvironmentAsync(GameSystemViewModel system, IFileInfo file, IDirectoryInfo rootFolder)
+        public async Task<Tuple<GameLaunchEnvironment, GameLaunchEnvironment.GenerateResult>> GenerateGameLaunchEnvironmentAsync(GameSystemViewModel system, IFileInfo file, IDirectoryInfo rootFolder)
         {
             var dependenciesMet = await system.CheckDependenciesMetAsync();
             if (!dependenciesMet)
             {
-                return (default(GameLaunchEnvironment), GameLaunchEnvironment.GenerateResult.DependenciesUnmet);
+                return Tuple.Create(default(GameLaunchEnvironment), GameLaunchEnvironment.GenerateResult.DependenciesUnmet);
             }
 
             if (system.CheckRootFolderRequired(file) && rootFolder == null)
             {
-                return (default(GameLaunchEnvironment), GameLaunchEnvironment.GenerateResult.RootFolderRequired);
+                return Tuple.Create(default(GameLaunchEnvironment), GameLaunchEnvironment.GenerateResult.RootFolderRequired);
             }
 
             var vfsRomPath = "ROM";
@@ -100,7 +100,7 @@ namespace RetriX.Shared.Services
                 virtualMainFilePath = entries.FirstOrDefault(d => system.SupportedExtensions.Contains(Path.GetExtension(d)));
                 if (string.IsNullOrEmpty(virtualMainFilePath))
                 {
-                    return (default(GameLaunchEnvironment), GameLaunchEnvironment.GenerateResult.NoMainFileFound);
+                    return Tuple.Create(default(GameLaunchEnvironment), GameLaunchEnvironment.GenerateResult.NoMainFileFound);
                 }
             }
             else
@@ -124,7 +124,7 @@ namespace RetriX.Shared.Services
 
             provider = new CombinedStreamProvider(new HashSet<IStreamProvider>() { provider, systemProvider, saveProvider });
 
-            return (new GameLaunchEnvironment(core, provider, virtualMainFilePath), GameLaunchEnvironment.GenerateResult.Success);
+            return Tuple.Create(new GameLaunchEnvironment(core, provider, virtualMainFilePath), GameLaunchEnvironment.GenerateResult.Success);
         }
     }
 }

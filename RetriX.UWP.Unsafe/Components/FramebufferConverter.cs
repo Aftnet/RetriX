@@ -1,20 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace RetriX.UWP.Components
 {
-    internal unsafe static class FramebufferConverter
+    internal static class FramebufferConverter
     {
         private const uint LookupTableSize = ushort.MaxValue + 1;
 
         private static readonly uint[] RGB0555LookupTable = new uint[LookupTableSize];
-        private static readonly GCHandle RGB0555LookupTableHandle;
-        private static readonly uint* RGB0555LookupTablePtr;
-
         private static readonly uint[] RGB565LookupTable = new uint[LookupTableSize];
-        private static readonly GCHandle RGB565LookupTableHandle;
-        private static readonly uint* RGB565LookupTablePtr;
 
         static FramebufferConverter()
         {
@@ -44,53 +38,51 @@ namespace RetriX.UWP.Components
 
                 RGB0555LookupTable[i] = 0xFF000000 | r << 16 | g << 8 | b;
             }
-
-            RGB0555LookupTableHandle = GCHandle.Alloc(RGB0555LookupTable, GCHandleType.Pinned);
-            RGB0555LookupTablePtr = (uint*)RGB0555LookupTableHandle.AddrOfPinnedObject();
-
-            RGB565LookupTableHandle = GCHandle.Alloc(RGB565LookupTable, GCHandleType.Pinned);
-            RGB565LookupTablePtr = (uint*)RGB565LookupTableHandle.AddrOfPinnedObject();
         }
 
-        public static void ConvertFrameBufferRGB0555ToXRGB8888(uint width, uint height, IReadOnlyList<ushort> input, int inputPitch, byte* output, int outputPitch)
+        public static void ConvertFrameBufferRGB0555ToXRGB8888(uint width, uint height, ReadOnlySpan<byte> input, int inputPitch, Span<byte> output, int outputPitch)
         {
-            ConvertFrameBufferUshortToXRGB8888WithLUT(width, height, input, inputPitch, output, outputPitch, RGB0555LookupTablePtr);
+           ConvertFrameBufferUshortToXRGB8888WithLUT(width, height, input, inputPitch, output, outputPitch, RGB0555LookupTable);
         }
 
-        public static void ConvertFrameBufferRGB565ToXRGB8888(uint width, uint height, IReadOnlyList<ushort> input, int inputPitch, byte* output, int outputPitch)
+        public static void ConvertFrameBufferRGB565ToXRGB8888(uint width, uint height, ReadOnlySpan<byte> input, int inputPitch, Span<byte> output, int outputPitch)
         {
-            ConvertFrameBufferUshortToXRGB8888WithLUT(width, height, input, inputPitch, output, outputPitch, RGB565LookupTablePtr);
+            ConvertFrameBufferUshortToXRGB8888WithLUT(width, height, input, inputPitch, output, outputPitch, RGB565LookupTable);
         }
 
-        public static void ConvertFrameBufferXRGB8888(uint width, uint height, IReadOnlyList<uint> input, int inputPitch, byte* output, int outputPitch)
+        public static void ConvertFrameBufferXRGB8888(uint width, uint height, ReadOnlySpan<byte> input, int inputPitch, Span<byte> output, int outputPitch)
         {
-            var inLineStartIx = 0;
+            var castInput = MemoryMarshal.Cast<byte, uint>(input);
+            var castInputPitch = inputPitch / sizeof(uint);
+            var castOutput = MemoryMarshal.Cast<byte, uint>(output);
+            var castOutputPitch = outputPitch / sizeof(uint);
+
             for (var i = 0; i < height; i++)
             {
-                var outLineStart = (uint*)output;
-                for (var j = 0; j < width; j++)
+                var inputLine = castInput.Slice(i * castInputPitch, castInputPitch);
+                var outputLine = castOutput.Slice(i * castOutputPitch, castOutputPitch);
+                for (var j = 0; j < inputLine.Length; j++)
                 {
-                    outLineStart[j] = input[inLineStartIx + j];
+                    outputLine[j] = inputLine[j];
                 }
-
-                inLineStartIx += inputPitch;
-                output += outputPitch;
             }
         }
 
-        private static void ConvertFrameBufferUshortToXRGB8888WithLUT(uint width, uint height, IReadOnlyList<ushort> input, int inputPitch, byte* output, int outputPitch, uint* lutPtr)
+        private static void ConvertFrameBufferUshortToXRGB8888WithLUT(uint width, uint height, ReadOnlySpan<byte> input, int inputPitch, Span<byte> output, int outputPitch, ReadOnlySpan<uint> lutPtr)
         {
-            var inLineStartIx = 0;
+            var castInput = MemoryMarshal.Cast<byte, ushort>(input);
+            var castInputPitch = inputPitch / sizeof(ushort);
+            var castOutput = MemoryMarshal.Cast<byte, uint>(output);
+            var castOutputPitch = outputPitch / sizeof(uint);
+
             for (var i = 0; i < height; i++)
             {
-                var outLineStart = (uint*)output;
-                for (var j = 0; j < width; j++)
+                var inputLine = castInput.Slice(i * castInputPitch, castInputPitch);
+                var outputLine = castOutput.Slice(i * castOutputPitch, castOutputPitch);
+                for (var j = 0; j < inputLine.Length; j++)
                 {
-                    outLineStart[j] = lutPtr[input[inLineStartIx + j]];
+                    outputLine[j] = lutPtr[inputLine[j]];
                 }
-
-                inLineStartIx += inputPitch;
-                output += outputPitch;
             }
         }
     }

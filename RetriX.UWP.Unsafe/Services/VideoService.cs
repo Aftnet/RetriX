@@ -1,5 +1,4 @@
 ﻿using LibRetriX;
-using Microsoft.Graphics.Canvas.UI;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using RetriX.Shared.Services;
 using RetriX.UWP.Components;
@@ -65,34 +64,14 @@ namespace RetriX.UWP
             return Task.CompletedTask;
         }
 
-        public void RenderVideoFrameRGB0555(IReadOnlyList<ushort> data, uint width, uint height, ulong pitch)
+        public void RenderVideoFrame(ReadOnlySpan<byte> data, uint width, uint height, ulong pitch)
         {
             if (RenderPanel == null)
             {
                 return;
             }
 
-            RenderTargetManager.UpdateFromCoreOutputRGB0555(RenderPanel.Device, data, width, height, pitch);
-        }
-
-        public void RenderVideoFrameRGB565(IReadOnlyList<ushort> data, uint width, uint height, ulong pitch)
-        {
-            if (RenderPanel == null)
-            {
-                return;
-            }
-
-            RenderTargetManager.UpdateFromCoreOutputRGB565(RenderPanel.Device, data, width, height, pitch);
-        }
-
-        public void RenderVideoFrameXRGB8888(IReadOnlyList<uint> data, uint width, uint height, ulong pitch)
-        {
-            if (RenderPanel == null)
-            {
-                return;
-            }
-
-            RenderTargetManager.UpdateFromCoreOutputXRGB8888(RenderPanel.Device, data, width, height, pitch);
+            RenderTargetManager.UpdateFromCoreOutput(RenderPanel.Device, data, width, height, pitch);
         }
 
         public void GeometryChanged(GameGeometry geometry)

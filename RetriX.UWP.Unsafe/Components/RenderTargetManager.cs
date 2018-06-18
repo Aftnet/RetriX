@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using Windows.Foundation;
-using Windows.Graphics.DirectX.Direct3D11;
 
 namespace RetriX.UWP.Components
 {
@@ -93,7 +92,7 @@ namespace RetriX.UWP.Components
             }
         }
 
-        public unsafe void UpdateFromCoreOutputRGB0555(CanvasDevice device, IReadOnlyList<ushort> data, uint width, uint height, ulong pitch)
+        public unsafe void UpdateFromCoreOutput(CanvasDevice device, ReadOnlySpan<byte> data, uint width, uint height, ulong pitch)
         {
             if (data == null || RenderTarget == null || CurrentPixelFormat == PixelFormats.Unknown)
                 return;
@@ -105,44 +104,21 @@ namespace RetriX.UWP.Components
 
                 using (var renderTargetMap = new BitmapMap(device, RenderTarget))
                 {
-                    var dataPtr = (byte*)new IntPtr(renderTargetMap.Data).ToPointer();
-                    FramebufferConverter.ConvertFrameBufferRGB0555ToXRGB8888(width, height, data, (int)pitch, dataPtr, (int)renderTargetMap.PitchBytes);
-                }
-            }
-        }
-
-        public unsafe void UpdateFromCoreOutputRGB565(CanvasDevice device, IReadOnlyList<ushort> data, uint width, uint height, ulong pitch)
-        {
-            if (data == null || RenderTarget == null || CurrentPixelFormat == PixelFormats.Unknown)
-                return;
-
-            lock (RenderTargetLock)
-            {
-                RenderTargetViewport.Width = width;
-                RenderTargetViewport.Height = height;
-
-                using (var renderTargetMap = new BitmapMap(device, RenderTarget))
-                {
-                    var dataPtr = (byte*)new IntPtr(renderTargetMap.Data).ToPointer();
-                    FramebufferConverter.ConvertFrameBufferRGB565ToXRGB8888(width, height, data, (int)pitch, dataPtr, (int)renderTargetMap.PitchBytes);
-                }
-            }
-        }
-
-        public unsafe void UpdateFromCoreOutputXRGB8888(CanvasDevice device, IReadOnlyList<uint> data, uint width, uint height, ulong pitch)
-        {
-            if (data == null || RenderTarget == null || CurrentPixelFormat == PixelFormats.Unknown)
-                return;
-
-            lock (RenderTargetLock)
-            {
-                RenderTargetViewport.Width = width;
-                RenderTargetViewport.Height = height;
-
-                using (var renderTargetMap = new BitmapMap(device, RenderTarget))
-                {
-                    var dataPtr = (byte*)new IntPtr(renderTargetMap.Data).ToPointer();
-                    FramebufferConverter.ConvertFrameBufferXRGB8888(width, height, data, (int)pitch, dataPtr, (int)renderTargetMap.PitchBytes);
+                    var inputPitch = (int)pitch;
+                    var mapPitch = (int)renderTargetMap.PitchBytes;
+                    var mapData = new Span<byte>(new IntPtr(renderTargetMap.Data).ToPointer(), (int)RenderTarget.Size.Height * mapPitch);
+                    switch(CurrentPixelFormat)
+                    {
+                        case PixelFormats.RGB0555:
+                            FramebufferConverter.ConvertFrameBufferRGB0555ToXRGB8888(width, height, data, inputPitch, mapData, mapPitch);
+                            break;
+                        case PixelFormats.RGB565:
+                            FramebufferConverter.ConvertFrameBufferRGB565ToXRGB8888(width, height, data, inputPitch, mapData, mapPitch);
+                            break;
+                        case PixelFormats.XRGB8888:
+                            FramebufferConverter.ConvertFrameBufferXRGB8888(width, height, data, inputPitch, mapData, mapPitch);
+                            break;
+                    }
                 }
             }
         }

@@ -1,27 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
+  
   <PropertyGroup>
     <TargetFramework>netstandard1.4</TargetFramework>
     <PackageTargetFallback>portable-net45+win8+wp8+wpa81</PackageTargetFallback>
     <NeutralLanguage>en-US</NeutralLanguage>
   </PropertyGroup>
-
+    
   <ItemGroup>
     <None Include="ViewModels\GameSystemViewModel.cs" />
   </ItemGroup>
-
+      
   <ItemGroup>
     <PackageReference Include="Acr.UserDialogs" Version="6.5.1" />
-    <PackageReference Include="LibRetriX" Version="0.1.24" />
+    <PackageReference Include="LibRetriX" Version="0.1.0" />
     <PackageReference Include="MvvmCross.Core" Version="5.7.0" />
     <PackageReference Include="Plugin.VersionTracking" Version="2.1.0" />
     <PackageReference Include="System.IO.Compression.ZipFile" Version="4.3.0" />
+    <PackageReference Include="System.Memory" Version="4.5.0" />
     <PackageReference Include="System.Security.Cryptography.Algorithms" Version="4.3.1" />
     <PackageReference Include="Xam.Plugin.FileSystem" Version="1.0.8" />
     <PackageReference Include="Xam.Plugins.Notifier" Version="2.1.0" />
     <PackageReference Include="Xam.Plugins.Settings" Version="3.1.1" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <Compile Update="Resources\Strings.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -29,12 +30,12 @@
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
   </ItemGroup>
-
+    
   <ItemGroup>
     <EmbeddedResource Update="Resources\Strings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-
+  
 </Project>

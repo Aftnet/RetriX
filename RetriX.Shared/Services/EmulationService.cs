@@ -57,9 +57,7 @@ namespace RetriX.Shared.Services
                 {
                     currentCore.GeometryChanged -= VideoService.GeometryChanged;
                     currentCore.PixelFormatChanged -= VideoService.PixelFormatChanged;
-                    currentCore.RenderVideoFrameRGB0555 -= VideoService.RenderVideoFrameRGB0555;
-                    currentCore.RenderVideoFrameRGB565 -= VideoService.RenderVideoFrameRGB565;
-                    currentCore.RenderVideoFrameXRGB8888 -= VideoService.RenderVideoFrameXRGB8888;
+                    currentCore.RenderVideoFrame -= VideoService.RenderVideoFrame;
                     currentCore.TimingsChanged -= VideoService.TimingsChanged;
                     currentCore.RotationChanged -= VideoService.RotationChanged;
                     currentCore.TimingsChanged -= AudioService.TimingChanged;
@@ -76,9 +74,7 @@ namespace RetriX.Shared.Services
                 {
                     currentCore.GeometryChanged += VideoService.GeometryChanged;
                     currentCore.PixelFormatChanged += VideoService.PixelFormatChanged;
-                    currentCore.RenderVideoFrameRGB0555 += VideoService.RenderVideoFrameRGB0555;
-                    currentCore.RenderVideoFrameRGB565 += VideoService.RenderVideoFrameRGB565;
-                    currentCore.RenderVideoFrameXRGB8888 += VideoService.RenderVideoFrameXRGB8888;
+                    currentCore.RenderVideoFrame += VideoService.RenderVideoFrame;
                     currentCore.TimingsChanged += VideoService.TimingsChanged;
                     currentCore.RotationChanged += VideoService.RotationChanged;
                     currentCore.TimingsChanged += AudioService.TimingChanged;

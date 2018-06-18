@@ -5,7 +5,7 @@ It can run on desktop, tablet, phone and Xbox One (in dev mode). Holographic, Mi
 
 ## Systems supported
 
-ReriX supports any [LibRetriX](https://github.com/Aftnet/LibRetriX) conformant cores.
+ReriX supports any [LibRetriX](https://gitlab.com/aftnet/LibRetriX) conformant cores.
 
 ## Demo
 

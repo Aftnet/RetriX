@@ -61,7 +61,7 @@ namespace RetriX.UWP.Components
             {
                 var inputLine = castInput.Slice(i * castInputPitch, castInputPitch);
                 var outputLine = castOutput.Slice(i * castOutputPitch, castOutputPitch);
-                for (var j = 0; j < inputLine.Length; j++)
+                for (var j = 0; j < width; j++)
                 {
                     outputLine[j] = inputLine[j];
                 }
@@ -79,7 +79,7 @@ namespace RetriX.UWP.Components
             {
                 var inputLine = castInput.Slice(i * castInputPitch, castInputPitch);
                 var outputLine = castOutput.Slice(i * castOutputPitch, castOutputPitch);
-                for (var j = 0; j < inputLine.Length; j++)
+                for (var j = 0; j < width; j++)
                 {
                     outputLine[j] = lutPtr[inputLine[j]];
                 }

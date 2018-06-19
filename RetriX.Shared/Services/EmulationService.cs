@@ -41,6 +41,8 @@ namespace RetriX.Shared.Services
         private bool StartStopOperationInProgress { get; set; } = false;
 
         private SemaphoreSlim CoreSemaphore { get; } = new SemaphoreSlim(1, 1);
+        private Func<bool> RequestedFrameAction { get; set; }
+        private TaskCompletionSource<bool> RequestedRunFrameThreadActionTCS { get; set; }
 
         private ICore currentCore;
         private ICore CurrentCore
@@ -318,9 +320,29 @@ namespace RetriX.Shared.Services
             InputService.InjectInputPlayer1(InjectedInputMapping[inputType]);
         }
 
+        private Task<bool> RequestFrameActionAsync(Func<bool> action)
+        {
+            if (RequestedFrameAction != null)
+            {
+                return Task.FromResult(false);
+            }
+
+            RequestedFrameAction = action;
+            RequestedRunFrameThreadActionTCS = new TaskCompletionSource<bool>();
+            return RequestedRunFrameThreadActionTCS.Task;
+        }
+
         //Synhronous since it's going to be called by a non UI thread
         private async void OnRunFrameRequested(object sender, EventArgs args)
         {
+            if (RequestedFrameAction != null)
+            {
+                RequestedRunFrameThreadActionTCS.SetResult(RequestedFrameAction.Invoke());
+                RequestedFrameAction = null;
+                RequestedRunFrameThreadActionTCS = null;
+                return;
+            }
+
             if (CurrentCore == null || CorePaused || AudioService.ShouldDelayNextFrame)
             {
                 return;

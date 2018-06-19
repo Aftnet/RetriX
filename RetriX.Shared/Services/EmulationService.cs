@@ -333,7 +333,7 @@ namespace RetriX.Shared.Services
         }
 
         //Synhronous since it's going to be called by a non UI thread
-        private async void OnRunFrameRequested(object sender, EventArgs args)
+        private void OnRunFrameRequested(object sender, EventArgs args)
         {
             if (RequestedFrameAction != null)
             {
@@ -343,15 +343,15 @@ namespace RetriX.Shared.Services
                 return;
             }
 
-            if (CurrentCore == null || CorePaused || AudioService.ShouldDelayNextFrame)
+            if (CorePaused || AudioService.ShouldDelayNextFrame)
             {
                 return;
             }
 
-            await CoreSemaphore.WaitAsync();
+            CoreSemaphore.Wait();
             try
             {
-                CurrentCore.RunFrame();
+                CurrentCore?.RunFrame();
             }
             catch (Exception e)
             {

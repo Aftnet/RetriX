@@ -40,7 +40,6 @@ namespace RetriX.Shared.Services
         private bool CorePaused { get; set; } = false;
         private bool StartStopOperationInProgress { get; set; } = false;
 
-        private SemaphoreSlim CoreSemaphore { get; } = new SemaphoreSlim(1, 1);
         private Func<bool> RequestedFrameAction { get; set; }
         private TaskCompletionSource<bool> RequestedRunFrameThreadActionTCS { get; set; }
 
@@ -130,42 +129,33 @@ namespace RetriX.Shared.Services
             var initTasks = new Task[] { InputService.InitAsync(), AudioService.InitAsync(), VideoService.InitAsync() };
             await Task.WhenAll(initTasks);
 
-            var loadSuccessful = false;
-            await CoreSemaphore.WaitAsync();
-            try
+            await RequestFrameActionAsync(() =>
             {
-                if (CurrentCore != null)
-                {
-                    await Task.Run(() => CurrentCore.UnloadGame());
-                }
+                CurrentCore?.UnloadGame();
+            });
 
-                StreamProvider = streamProvider;
-                SaveStateService.SetGameId(mainFilePath);
-                CorePaused = false;
-                CurrentCore = core;
+            StreamProvider = streamProvider;
+            SaveStateService.SetGameId(mainFilePath);
+            CorePaused = false;
 
-                loadSuccessful = await Task.Run(() =>
-                {
-                    try
-                    {
-                        return CurrentCore.LoadGame(mainFilePath);
-                    }
-                    catch
-                    {
-                        return false;
-                    }
-                });
-
-                if (!loadSuccessful)
-                {
-                    await StopGameAsyncInternal();
-                    StartStopOperationInProgress = false;
-                    return loadSuccessful;
-                }
-            }
-            finally
+            var loadSuccessful = await RequestFrameActionAsync(() =>
             {
-                CoreSemaphore.Release();
+                try
+                {
+                    CurrentCore = core;
+                    return CurrentCore.LoadGame(mainFilePath);
+                }
+                catch
+                {
+                    return false;
+                }
+            });
+
+            if (!loadSuccessful)
+            {
+                await StopGameAsyncInternal();
+                StartStopOperationInProgress = false;
+                return loadSuccessful;
             }
 
             GameStarted?.Invoke(this, EventArgs.Empty);
@@ -173,20 +163,12 @@ namespace RetriX.Shared.Services
             return loadSuccessful;
         }
 
-        public async Task ResetGameAsync()
+        public Task ResetGameAsync()
         {
-            await CoreSemaphore.WaitAsync();
-            try
+            return RequestFrameActionAsync(() =>
             {
-                if (CurrentCore != null)
-                {
-                    await Task.Run(() => CurrentCore.Reset());
-                }
-            }
-            finally
-            {
-                CoreSemaphore.Release();
-            }
+                CurrentCore?.Reset();
+            });
         }
 
         public async Task StopGameAsync()
@@ -197,28 +179,18 @@ namespace RetriX.Shared.Services
             }
 
             StartStopOperationInProgress = true;
-
-            await CoreSemaphore.WaitAsync();
-            try
-            {
-                await StopGameAsyncInternal();
-            }
-            finally
-            {
-                CoreSemaphore.Release();
-            }
-
+            await StopGameAsyncInternal();
             GameStopped?.Invoke(this, EventArgs.Empty);
             StartStopOperationInProgress = false;
         }
 
         private async Task StopGameAsyncInternal()
         {
-            if (CurrentCore != null)
+            await RequestFrameActionAsync(() =>
             {
-                await Task.Run(() => CurrentCore.UnloadGame());
+                CurrentCore?.UnloadGame();
                 CurrentCore = null;
-            }
+            });
 
             SaveStateService.SetGameId(null);
             StreamProvider = null;
@@ -239,24 +211,17 @@ namespace RetriX.Shared.Services
 
         private async Task SetCorePaused(bool value)
         {
-            await CoreSemaphore.WaitAsync();
             if (value)
             {
                 await Task.Run(() => AudioService.Stop());
             }
 
             CorePaused = value;
-            CoreSemaphore.Release();
         }
 
         public async Task<bool> SaveGameStateAsync(uint slotID)
         {
             var success = false;
-            if (CurrentCore == null)
-            {
-                return success;
-            }
-
             using (var stream = await SaveStateService.GetStreamForSlotAsync(slotID, FileAccess.ReadWrite))
             {
                 if (stream == null)
@@ -264,15 +229,15 @@ namespace RetriX.Shared.Services
                     return success;
                 }
 
-                await CoreSemaphore.WaitAsync();
-                try
+                success = await RequestFrameActionAsync(() =>
                 {
-                    success = await Task.Run(() => CurrentCore.SaveState(stream));
-                }
-                finally
-                {
-                    CoreSemaphore.Release();
-                }
+                    if (CurrentCore == null)
+                    {
+                        return false;
+                    }
+
+                    return CurrentCore.SaveState(stream);
+                });
 
                 await stream.FlushAsync();
             }
@@ -289,11 +254,6 @@ namespace RetriX.Shared.Services
         public async Task<bool> LoadGameStateAsync(uint slotID)
         {
             var success = false;
-            if (CurrentCore == null)
-            {
-                return success;
-            }
-
             using (var stream = await SaveStateService.GetStreamForSlotAsync(slotID, FileAccess.Read))
             {
                 if (stream == null)
@@ -301,15 +261,15 @@ namespace RetriX.Shared.Services
                     return false;
                 }
 
-                await CoreSemaphore.WaitAsync();
-                try
+                success = await RequestFrameActionAsync(() =>
                 {
-                    success = await Task.Run(() => CurrentCore.LoadState(stream));
-                }
-                finally
-                {
-                    CoreSemaphore.Release();
-                }
+                    if (CurrentCore == null)
+                    {
+                        return false;
+                    }
+
+                    return CurrentCore.LoadState(stream);
+                });
             }
 
             return success;
@@ -318,6 +278,15 @@ namespace RetriX.Shared.Services
         public void InjectInputPlayer1(InjectedInputTypes inputType)
         {
             InputService.InjectInputPlayer1(InjectedInputMapping[inputType]);
+        }
+
+        private Task<bool> RequestFrameActionAsync(Action action)
+        {
+            return RequestFrameActionAsync(() =>
+            {
+                action.Invoke();
+                return true;
+            });
         }
 
         private Task<bool> RequestFrameActionAsync(Func<bool> action)
@@ -348,7 +317,6 @@ namespace RetriX.Shared.Services
                 return;
             }
 
-            CoreSemaphore.Wait();
             try
             {
                 CurrentCore?.RunFrame();
@@ -363,10 +331,6 @@ namespace RetriX.Shared.Services
                 }
 
                 var task = Dispatcher.RequestMainThreadAction(() => GameRuntimeExceptionOccurred?.Invoke(this, e));
-            }
-            finally
-            {
-                CoreSemaphore.Release();
             }
         }
 

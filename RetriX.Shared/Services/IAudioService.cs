@@ -7,7 +7,7 @@ namespace RetriX.Shared.Services
     {
         bool ShouldDelayNextFrame { get; }
         void TimingChanged(SystemTimings timings);
-        void RenderAudioFrames(ReadOnlySpan<short> data, ulong numFrames);
+        uint RenderAudioFrames(ReadOnlySpan<short> data, uint numFrames);
         void Stop();
     }
 }

@@ -13,7 +13,7 @@ namespace RetriX.Shared.Services
         void PixelFormatChanged(PixelFormats format);
         void RotationChanged(Rotations rotation);
         void TimingsChanged(SystemTimings timings);
-        void RenderVideoFrame(ReadOnlySpan<byte> data, uint width, uint height, ulong pitch);
+        void RenderVideoFrame(ReadOnlySpan<byte> data, uint width, uint height, uint pitch);
         void SetFilter(TextureFilterTypes filterType);
     }
 }

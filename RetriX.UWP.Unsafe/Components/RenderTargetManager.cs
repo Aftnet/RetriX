@@ -92,7 +92,7 @@ namespace RetriX.UWP.Components
             }
         }
 
-        public unsafe void UpdateFromCoreOutput(CanvasDevice device, ReadOnlySpan<byte> data, uint width, uint height, ulong pitch)
+        public unsafe void UpdateFromCoreOutput(CanvasDevice device, ReadOnlySpan<byte> data, uint width, uint height, uint pitch)
         {
             if (data == null || RenderTarget == null || CurrentPixelFormat == PixelFormats.Unknown)
                 return;

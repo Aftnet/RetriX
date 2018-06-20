@@ -90,10 +90,10 @@ namespace RetriX.UWP.Services
             var operation = ReconstructGraph(sampleRate);
         }
 
-        public void RenderAudioFrames(ReadOnlySpan<short> data, ulong numFrames)
+        public uint RenderAudioFrames(ReadOnlySpan<short> data, uint numFrames)
         {
             if (!AllowPlaybackControl)
-                return;
+                return numFrames;
 
             var numSrcSamples = (uint)numFrames * NumChannels;
             var bufferRemainingCapacity = Math.Max(0, MaxSamplesQueueSize - SamplesBuffer.Count);
@@ -111,6 +111,8 @@ namespace RetriX.UWP.Services
                     Graph.Start();
                 }
             }
+
+            return numFrames;
         }
 
         public void Stop()

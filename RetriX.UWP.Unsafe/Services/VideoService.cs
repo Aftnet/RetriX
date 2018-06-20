@@ -64,7 +64,7 @@ namespace RetriX.UWP
             return Task.CompletedTask;
         }
 
-        public void RenderVideoFrame(ReadOnlySpan<byte> data, uint width, uint height, ulong pitch)
+        public void RenderVideoFrame(ReadOnlySpan<byte> data, uint width, uint height, uint pitch)
         {
             if (RenderPanel == null)
             {

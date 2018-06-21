@@ -248,4 +248,7 @@ Restart RetriX and try again.</value>
   <data name="NoCompatibleFileInArchiveAlertTitle" xml:space="preserve">
     <value>No compatible file found</value>
   </data>
+  <data name="SystemName32X" xml:space="preserve">
+    <value>32X</value>
+  </data>
 </root>

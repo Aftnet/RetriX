@@ -24,6 +24,7 @@ namespace RetriX.UWP.Services
             yield return GameSystemViewModel.MakeGameGear(LibRetriX.GenesisPlusGX.Core.Instance, fileSystem);
             yield return GameSystemViewModel.MakeMegaDrive(LibRetriX.GenesisPlusGX.Core.Instance, fileSystem);
             yield return GameSystemViewModel.MakeMegaCD(LibRetriX.GenesisPlusGX.Core.Instance, fileSystem);
+            //yield return GameSystemViewModel.Make32X(LibRetriX.PicoDrive.Core.Instance, fileSystem);
             //yield return GameSystemViewModel.MakeSaturn(LibRetriX.BeetleSaturn.Core.Instance, fileSystem);
             yield return GameSystemViewModel.MakePlayStation(LibRetriX.BeetlePSX.Core.Instance, fileSystem);
             yield return GameSystemViewModel.MakePCEngine(LibRetriX.BeetlePCEFast.Core.Instance, fileSystem);

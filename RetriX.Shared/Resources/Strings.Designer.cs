@@ -253,6 +253,15 @@ namespace RetriX.Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 32X.
+        /// </summary>
+        internal static string SystemName32X {
+            get {
+                return ResourceManager.GetString("SystemName32X", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Arcade.
         /// </summary>
         internal static string SystemNameArcade {

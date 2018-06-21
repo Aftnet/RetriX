@@ -240,43 +240,43 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="LibRetriX.BeetleNGP">
-      <Version>0.1.26</Version>
+      <Version>0.1.27</Version>
     </PackageReference>
     <PackageReference Include="LibRetriX.BeetlePCEFast">
-      <Version>0.1.26</Version>
+      <Version>0.1.27</Version>
     </PackageReference>
     <PackageReference Include="LibRetriX.BeetlePCFX">
-      <Version>0.1.26</Version>
+      <Version>0.1.27</Version>
     </PackageReference>
     <PackageReference Include="LibRetriX.BeetlePSX">
-      <Version>0.1.26</Version>
+      <Version>0.1.27</Version>
     </PackageReference>
     <PackageReference Include="LibRetriX.BeetleWSwan">
-      <Version>0.1.26</Version>
+      <Version>0.1.27</Version>
     </PackageReference>
     <PackageReference Include="LibRetriX.FBAlpha">
-      <Version>0.1.26</Version>
+      <Version>0.1.27</Version>
     </PackageReference>
     <PackageReference Include="LibRetriX.FCEUMM">
-      <Version>0.1.26</Version>
+      <Version>0.1.27</Version>
     </PackageReference>
     <PackageReference Include="LibRetriX.Gambatte">
-      <Version>0.1.26</Version>
+      <Version>0.1.27</Version>
     </PackageReference>
     <PackageReference Include="LibRetriX.GenesisPlusGX">
-      <Version>0.1.26</Version>
+      <Version>0.1.27</Version>
     </PackageReference>
     <PackageReference Include="LibRetriX.MelonDS">
-      <Version>0.1.26</Version>
+      <Version>0.1.27</Version>
     </PackageReference>
     <PackageReference Include="LibRetriX.Nestopia">
-      <Version>0.1.26</Version>
+      <Version>0.1.27</Version>
     </PackageReference>
     <PackageReference Include="LibRetriX.Snes9X">
-      <Version>0.1.26</Version>
+      <Version>0.1.27</Version>
     </PackageReference>
     <PackageReference Include="LibRetriX.VBAM">
-      <Version>0.1.26</Version>
+      <Version>0.1.27</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.1.5</Version>

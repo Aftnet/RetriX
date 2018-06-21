@@ -189,6 +189,16 @@
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>
+        <uap:Extension Category="windows.fileTypeAssociation">
+          <uap:FileTypeAssociation Name="s32xroms">
+            <uap:DisplayName>ms-resource:S32XRomDescription\Text</uap:DisplayName>
+            <uap:Logo>Assets\FileIcon.png</uap:Logo>
+            <uap:InfoTip>ms-resource:S32XRomDescription\Text</uap:InfoTip>
+            <uap:SupportedFileTypes>
+              <uap:FileType>.32x</uap:FileType>
+            </uap:SupportedFileTypes>
+          </uap:FileTypeAssociation>
+        </uap:Extension>
       </Extensions>
     </Application>
   </Applications>

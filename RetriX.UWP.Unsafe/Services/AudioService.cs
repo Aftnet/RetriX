@@ -3,7 +3,6 @@ using RetriX.Shared.Services;
 using RetriX.UWP.Components;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Media;
@@ -91,10 +90,10 @@ namespace RetriX.UWP.Services
             var operation = ReconstructGraph(sampleRate);
         }
 
-        public void RenderAudioFrames(IReadOnlyList<short> data, ulong numFrames)
+        public uint RenderAudioFrames(ReadOnlySpan<short> data, uint numFrames)
         {
             if (!AllowPlaybackControl)
-                return;
+                return numFrames;
 
             var numSrcSamples = (uint)numFrames * NumChannels;
             var bufferRemainingCapacity = Math.Max(0, MaxSamplesQueueSize - SamplesBuffer.Count);
@@ -112,6 +111,8 @@ namespace RetriX.UWP.Services
                     Graph.Start();
                 }
             }
+
+            return numFrames;
         }
 
         public void Stop()

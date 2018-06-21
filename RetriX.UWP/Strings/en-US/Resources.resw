@@ -240,4 +240,7 @@
   <data name="ZipRomDescription.Text" xml:space="preserve">
     <value>Zip compressed Rom</value>
   </data>
+  <data name="S32XRomDescription.Text" xml:space="preserve">
+    <value>SEGA 32X Rom</value>
+  </data>
 </root>

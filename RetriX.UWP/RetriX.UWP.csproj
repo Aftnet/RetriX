@@ -12,7 +12,7 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.17134.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.15063.0</TargetPlatformMinVersion>
+    <TargetPlatformMinVersion>10.0.16299.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -240,43 +240,46 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="LibRetriX.BeetleNGP">
-      <Version>0.1.27</Version>
+      <Version>0.1.28</Version>
     </PackageReference>
     <PackageReference Include="LibRetriX.BeetlePCEFast">
-      <Version>0.1.27</Version>
+      <Version>0.1.28</Version>
     </PackageReference>
     <PackageReference Include="LibRetriX.BeetlePCFX">
-      <Version>0.1.27</Version>
+      <Version>0.1.28</Version>
     </PackageReference>
     <PackageReference Include="LibRetriX.BeetlePSX">
-      <Version>0.1.27</Version>
+      <Version>0.1.28</Version>
     </PackageReference>
     <PackageReference Include="LibRetriX.BeetleWSwan">
-      <Version>0.1.27</Version>
+      <Version>0.1.28</Version>
     </PackageReference>
     <PackageReference Include="LibRetriX.FBAlpha">
-      <Version>0.1.27</Version>
+      <Version>0.1.28</Version>
     </PackageReference>
     <PackageReference Include="LibRetriX.FCEUMM">
-      <Version>0.1.27</Version>
+      <Version>0.1.28</Version>
     </PackageReference>
     <PackageReference Include="LibRetriX.Gambatte">
-      <Version>0.1.27</Version>
+      <Version>0.1.28</Version>
     </PackageReference>
     <PackageReference Include="LibRetriX.GenesisPlusGX">
-      <Version>0.1.27</Version>
+      <Version>0.1.28</Version>
     </PackageReference>
     <PackageReference Include="LibRetriX.MelonDS">
-      <Version>0.1.27</Version>
+      <Version>0.1.28</Version>
     </PackageReference>
     <PackageReference Include="LibRetriX.Nestopia">
-      <Version>0.1.27</Version>
+      <Version>0.1.28</Version>
+    </PackageReference>
+    <PackageReference Include="LibRetriX.PicoDrive">
+      <Version>0.1.28</Version>
     </PackageReference>
     <PackageReference Include="LibRetriX.Snes9X">
-      <Version>0.1.27</Version>
+      <Version>0.1.28</Version>
     </PackageReference>
     <PackageReference Include="LibRetriX.VBAM">
-      <Version>0.1.27</Version>
+      <Version>0.1.28</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.1.5</Version>

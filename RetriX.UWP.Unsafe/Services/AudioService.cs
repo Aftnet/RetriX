@@ -144,7 +144,7 @@ namespace RetriX.UWP.Services
             MinNumSamplesForPlayback = (int)(SampleRate * PlaybackDelaySeconds);
             MaxNumSamplesForTargetDelay = (int)(SampleRate * MaxAllowedDelaySeconds);
 
-            var graphResult = await AudioGraph.CreateAsync(new AudioGraphSettings(Windows.Media.Render.AudioRenderCategory.GameMedia));
+            var graphResult = await AudioGraph.CreateAsync(new AudioGraphSettings(Windows.Media.Render.AudioRenderCategory.GameMedia)).AsTask().ConfigureAwait(false);
             if (graphResult.Status != AudioGraphCreationStatus.Success)
             {
                 DisposeGraph();
@@ -153,7 +153,7 @@ namespace RetriX.UWP.Services
             Graph = graphResult.Graph;
             Graph.Stop();
 
-            var outNodeResult = await Graph.CreateDeviceOutputNodeAsync();
+            var outNodeResult = await Graph.CreateDeviceOutputNodeAsync().AsTask().ConfigureAwait(false);
             if (outNodeResult.Status != AudioDeviceNodeCreationStatus.Success)
             {
                 DisposeGraph();

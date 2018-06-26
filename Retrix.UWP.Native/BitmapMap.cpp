@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "BitmapMap.h"
+#include "D3D11Interop.h"
 
 using namespace Retrix::UWP::Native;
 using namespace Platform;
@@ -17,8 +18,7 @@ BitmapMap::~BitmapMap()
 
 CanvasBitmap^ BitmapMap::CreateMappableBitmap(CanvasDrawingSession^ drawingSession, unsigned int width, unsigned int height)
 {
-	ComPtr<ID3D11Device> d3dDevice;
-	__abi_ThrowIfFailed(GetDXGIInterface(drawingSession->Device, d3dDevice.GetAddressOf()));
+	ComPtr<ID3D11Device> d3dDevice(D3D11Interop::GetD3D11DevicePtr(drawingSession));
 
 	D3D11_TEXTURE2D_DESC texDesc = { 0 };
 	texDesc.Width = width;

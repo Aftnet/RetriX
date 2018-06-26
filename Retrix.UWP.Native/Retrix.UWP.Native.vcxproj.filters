@@ -9,10 +9,13 @@
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="BitmapMap.cpp" />
+    <ClCompile Include="D3D11Interop.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="BitmapMap.h" />
+    <ClInclude Include="IntPtr.h" />
+    <ClInclude Include="D3D11Interop.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

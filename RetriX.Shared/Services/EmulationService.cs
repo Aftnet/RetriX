@@ -6,6 +6,7 @@ using Plugin.LocalNotifications.Abstractions;
 using RetriX.Shared.StreamProviders;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -335,13 +336,21 @@ namespace RetriX.Shared.Services
 
         private Stream OnCoreOpenFileStream(string path, FileAccess fileAccess)
         {
-            var stream = StreamProvider.OpenFileStreamAsync(path, fileAccess).Result;
-            return stream;
+            try
+            {
+                var stream = Task.Run(() => StreamProvider.OpenFileStreamAsync(path, fileAccess)).Result;
+                return stream;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine($"Error opening VFS path {path} - {e.Message}");
+                return null;
+            }
         }
 
         private void OnCoreCloseFileStream(Stream stream)
         {
             StreamProvider.CloseStream(stream);
-        }        
+        }
     }
 }

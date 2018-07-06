@@ -17,7 +17,7 @@ namespace Retrix
 			{
 			public:
 				static IntPtr GetD3D11Device(CanvasDrawingSession^ drawingSession);
-				static IntPtr GetD3D11Context(CanvasDrawingSession^ device);
+				static IntPtr GetD3D11Context(CanvasDrawingSession^ drawingSession);
 			internal:
 				static ID3D11Device* GetD3D11DevicePtr(CanvasDrawingSession^ drawingSession);
 			};

@@ -2,7 +2,6 @@
 using RetriX.Shared.Services;
 using RetriX.UWP.Components;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Media;
@@ -10,37 +9,10 @@ using Windows.Media.Audio;
 
 namespace RetriX.UWP.Services
 {
-    public sealed class AudioService : IAudioService
+    public sealed class AudioService : AudioServiceBase
     {
-        private const uint NullSampleRate = 0;
-        private const uint MaxSamplesQueueSize = 44100 * 4;
-        private const uint NumChannels = 2;
-        private const float PlaybackDelaySeconds = 0.2f; //Have some buffer to avoid crackling
-        private const float MaxAllowedDelaySeconds = 0.4f; //Limit maximum delay
-
-        private int MinNumSamplesForPlayback = 0;
-        private int MaxNumSamplesForTargetDelay = 0;
-
-        private uint SampleRate { get; set; }
-
-        public bool ShouldDelayNextFrame
-        {
-            get
-            {
-                if (SampleRate == NullSampleRate)
-                    return false; //Allow core a chance to init timings by runnning
-
-                lock (SamplesBuffer)
-                {
-                    return SamplesBuffer.Count >= MaxNumSamplesForTargetDelay;
-                }
-            }
-        }
-
-        private readonly Queue<short> SamplesBuffer = new Queue<short>();
-
         private bool GraphReconstructionInProgress = false;
-        private bool AllowPlaybackControl => !GraphReconstructionInProgress && InputNode != null;
+        protected override bool AllowPlaybackControl => !GraphReconstructionInProgress && InputNode != null;
 
         private AudioGraph graph;
         private AudioGraph Graph
@@ -68,81 +40,57 @@ namespace RetriX.UWP.Services
             SampleRate = NullSampleRate;
         }
 
-        public Task InitAsync()
+        public override Task InitAsync()
         {
             return Task.CompletedTask;
         }
 
-        public Task DeinitAsync()
+        public override Task DeinitAsync()
         {
             Stop();
             DisposeGraph();
             return Task.CompletedTask;
         }
 
-        public void TimingChanged(SystemTimings timings)
+        public override void TimingChanged(SystemTimings timings)
         {
             uint sampleRate = (uint)timings.SampleRate;
             if (SampleRate == sampleRate || GraphReconstructionInProgress)
                 return;
 
+            SampleRate = sampleRate;
+
             Stop();
-            var operation = ReconstructGraph(sampleRate);
+            var operation = ReconstructGraph();
         }
 
-        public uint RenderAudioFrames(ReadOnlySpan<short> data, uint numFrames)
+        public override void Stop()
         {
             if (!AllowPlaybackControl)
-                return numFrames;
-
-            var numSrcSamples = (uint)numFrames * NumChannels;
-            var bufferRemainingCapacity = Math.Max(0, MaxSamplesQueueSize - SamplesBuffer.Count);
-            var numSamplesToCopy = Math.Min(numSrcSamples, bufferRemainingCapacity);
-
-            lock (SamplesBuffer)
             {
-                for (var i = 0; i < numSamplesToCopy; i++)
-                {
-                    SamplesBuffer.Enqueue(data[i]);
-                }
-
-                if (SamplesBuffer.Count >= MinNumSamplesForPlayback)
-                {
-                    Graph.Start();
-                }
-            }
-
-            return numFrames;
-        }
-
-        public void Stop()
-        {
-            if (!AllowPlaybackControl)
                 return;
+            }
 
             Graph.Stop();
-
-            lock (SamplesBuffer)
-            {
-                SamplesBuffer.Clear();
-            }
+            base.Stop();
         }
 
-        private async Task ReconstructGraph(uint sampleRate)
+        protected override void StartPlayback()
+        {
+            Graph.Start();
+        }
+
+        private async Task ReconstructGraph()
         {
             GraphReconstructionInProgress = true;
 
-            if (sampleRate == NullSampleRate) //If invalid sample rate do not create graph but return to allow trying again
+            if (SampleRate == NullSampleRate) //If invalid sample rate do not create graph but return to allow trying again
             {
                 GraphReconstructionInProgress = false;
                 return;
             }
 
             DisposeGraph();
-
-            SampleRate = sampleRate;
-            MinNumSamplesForPlayback = (int)(SampleRate * PlaybackDelaySeconds);
-            MaxNumSamplesForTargetDelay = (int)(SampleRate * MaxAllowedDelaySeconds);
 
             var graphResult = await AudioGraph.CreateAsync(new AudioGraphSettings(Windows.Media.Render.AudioRenderCategory.GameMedia)).AsTask().ConfigureAwait(false);
             if (graphResult.Status != AudioGraphCreationStatus.Success)

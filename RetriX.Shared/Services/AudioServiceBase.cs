@@ -28,9 +28,9 @@ namespace RetriX.Shared.Services
             get => sampleRate;
             set
             {
-                SampleRate = value;
-                MinNumSamplesForPlayback = (int)(value * PlaybackDelaySeconds);
-                MaxNumSamplesForTargetDelay = (int)(value * MaxAllowedDelaySeconds);
+                sampleRate = value;
+                MinNumSamplesForPlayback = (int)(sampleRate * PlaybackDelaySeconds);
+                MaxNumSamplesForTargetDelay = (int)(sampleRate * MaxAllowedDelaySeconds);
             }
         }
 

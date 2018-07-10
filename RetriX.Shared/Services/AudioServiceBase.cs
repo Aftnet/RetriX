@@ -7,8 +7,7 @@ namespace RetriX.Shared.Services
 {
     public abstract class AudioServiceBase : IAudioService
     {
-        protected abstract bool AllowPlaybackControl { get; }
-        protected abstract void StartPlayback();
+        protected abstract void Start();
         public abstract Task InitAsync();
         public abstract Task DeinitAsync();
         public abstract void TimingChanged(SystemTimings timings);
@@ -52,13 +51,8 @@ namespace RetriX.Shared.Services
             }
         }
 
-        public uint RenderAudioFrames(ReadOnlySpan<short> data, uint numFrames)
+        public virtual uint RenderAudioFrames(ReadOnlySpan<short> data, uint numFrames)
         {
-            if (!AllowPlaybackControl)
-            {
-                return numFrames;
-            }
-
             var numSrcSamples = (uint)numFrames * NumChannels;
             var bufferRemainingCapacity = Math.Max(0, MaxSamplesQueueSize - SamplesBuffer.Count);
             var numSamplesToCopy = Math.Min(numSrcSamples, bufferRemainingCapacity);
@@ -72,7 +66,7 @@ namespace RetriX.Shared.Services
 
                 if (SamplesBuffer.Count >= MinNumSamplesForPlayback)
                 {
-                    StartPlayback();
+                    Start();
                 }
             }
 
@@ -81,11 +75,6 @@ namespace RetriX.Shared.Services
 
         public virtual void Stop()
         {
-            if (!AllowPlaybackControl)
-            {
-                return;
-            }
-
             lock (SamplesBuffer)
             {
                 SamplesBuffer.Clear();

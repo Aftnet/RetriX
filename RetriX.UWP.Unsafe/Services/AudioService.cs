@@ -12,7 +12,7 @@ namespace RetriX.UWP.Services
     public sealed class AudioService : AudioServiceBase
     {
         private bool GraphReconstructionInProgress = false;
-        protected override bool AllowPlaybackControl => !GraphReconstructionInProgress && InputNode != null;
+        private bool AllowPlaybackControl => !GraphReconstructionInProgress && InputNode != null;
 
         private AudioGraph graph;
         private AudioGraph Graph
@@ -49,6 +49,7 @@ namespace RetriX.UWP.Services
         {
             Stop();
             DisposeGraph();
+            SampleRate = NullSampleRate;
             return Task.CompletedTask;
         }
 
@@ -75,8 +76,13 @@ namespace RetriX.UWP.Services
             base.Stop();
         }
 
-        protected override void StartPlayback()
+        protected override void Start()
         {
+            if (!AllowPlaybackControl)
+            {
+                return;
+            }
+
             Graph.Start();
         }
 
@@ -96,6 +102,7 @@ namespace RetriX.UWP.Services
             if (graphResult.Status != AudioGraphCreationStatus.Success)
             {
                 DisposeGraph();
+                SampleRate = NullSampleRate;
                 throw new Exception($"Unable to create audio graph: {graphResult.Status.ToString()}");
             }
             Graph = graphResult.Graph;
@@ -105,6 +112,7 @@ namespace RetriX.UWP.Services
             if (outNodeResult.Status != AudioDeviceNodeCreationStatus.Success)
             {
                 DisposeGraph();
+                SampleRate = NullSampleRate;
                 throw new Exception($"Unable to create device node: {outNodeResult.Status.ToString()}");
             }
             OutputNode = outNodeResult.DeviceOutputNode;
@@ -122,11 +130,9 @@ namespace RetriX.UWP.Services
 
         private void DisposeGraph()
         {
-            Stop();
             InputNode = null;
             OutputNode = null;
             Graph = null;
-            SampleRate = NullSampleRate;
         }
 
         private void InputNodeQuantumStartedHandler(AudioFrameInputNode sender, FrameInputNodeQuantumStartedEventArgs args)

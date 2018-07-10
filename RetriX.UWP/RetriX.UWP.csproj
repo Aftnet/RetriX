@@ -119,6 +119,7 @@
     <Compile Include="Converters\ItemClickEventArgsConverter.cs" />
     <Compile Include="Presentation\CurrentViewModelPresenter.cs" />
     <Compile Include="Services\GameSystemsProviderService.cs" />
+    <Compile Include="Services\InputService.cs" />
     <Compile Include="Setup.cs" />
     <Compile Include="Views\AboutView.xaml.cs">
       <DependentUpon>AboutView.xaml</DependentUpon>

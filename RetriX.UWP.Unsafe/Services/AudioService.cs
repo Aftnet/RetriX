@@ -1,5 +1,4 @@
-﻿using LibRetriX;
-using RetriX.Shared.Services;
+﻿using RetriX.Shared.Services;
 using RetriX.UWP.Components;
 using System;
 using System.Threading.Tasks;
@@ -11,9 +10,6 @@ namespace RetriX.UWP.Services
 {
     public sealed class AudioService : AudioServiceBase
     {
-        private bool GraphReconstructionInProgress = false;
-        private bool AllowPlaybackControl => !GraphReconstructionInProgress && InputNode != null;
-
         private AudioGraph graph;
         private AudioGraph Graph
         {
@@ -35,74 +31,11 @@ namespace RetriX.UWP.Services
             set { if (inputNode != value) { inputNode?.Dispose(); inputNode = value; } }
         }
 
-        public AudioService()
+        protected override async Task CreateResourcesAsync(uint sampleRate)
         {
-            SampleRate = NullSampleRate;
-        }
-
-        public override Task InitAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        public override Task DeinitAsync()
-        {
-            Stop();
-            DisposeGraph();
-            SampleRate = NullSampleRate;
-            return Task.CompletedTask;
-        }
-
-        public override void TimingChanged(SystemTimings timings)
-        {
-            uint sampleRate = (uint)timings.SampleRate;
-            if (SampleRate == sampleRate || GraphReconstructionInProgress)
-                return;
-
-            SampleRate = sampleRate;
-
-            Stop();
-            var operation = ReconstructGraph();
-        }
-
-        public override void Stop()
-        {
-            if (!AllowPlaybackControl)
-            {
-                return;
-            }
-
-            Graph.Stop();
-            base.Stop();
-        }
-
-        protected override void Start()
-        {
-            if (!AllowPlaybackControl)
-            {
-                return;
-            }
-
-            Graph.Start();
-        }
-
-        private async Task ReconstructGraph()
-        {
-            GraphReconstructionInProgress = true;
-
-            if (SampleRate == NullSampleRate) //If invalid sample rate do not create graph but return to allow trying again
-            {
-                GraphReconstructionInProgress = false;
-                return;
-            }
-
-            DisposeGraph();
-
             var graphResult = await AudioGraph.CreateAsync(new AudioGraphSettings(Windows.Media.Render.AudioRenderCategory.GameMedia)).AsTask().ConfigureAwait(false);
             if (graphResult.Status != AudioGraphCreationStatus.Success)
             {
-                DisposeGraph();
-                SampleRate = NullSampleRate;
                 throw new Exception($"Unable to create audio graph: {graphResult.Status.ToString()}");
             }
             Graph = graphResult.Graph;
@@ -111,41 +44,42 @@ namespace RetriX.UWP.Services
             var outNodeResult = await Graph.CreateDeviceOutputNodeAsync().AsTask().ConfigureAwait(false);
             if (outNodeResult.Status != AudioDeviceNodeCreationStatus.Success)
             {
-                DisposeGraph();
-                SampleRate = NullSampleRate;
                 throw new Exception($"Unable to create device node: {outNodeResult.Status.ToString()}");
             }
             OutputNode = outNodeResult.DeviceOutputNode;
 
             var nodeProperties = Graph.EncodingProperties;
             nodeProperties.ChannelCount = NumChannels;
-            nodeProperties.SampleRate = SampleRate;
+            nodeProperties.SampleRate = sampleRate;
 
             InputNode = Graph.CreateFrameInputNode(nodeProperties);
             InputNode.QuantumStarted += InputNodeQuantumStartedHandler;
             InputNode.AddOutgoingConnection(OutputNode);
-
-            GraphReconstructionInProgress = false;
         }
 
-        private void DisposeGraph()
+        protected override void DestroyResources()
         {
             InputNode = null;
             OutputNode = null;
             Graph = null;
         }
 
-        private void InputNodeQuantumStartedHandler(AudioFrameInputNode sender, FrameInputNodeQuantumStartedEventArgs args)
+        protected override void StartPlayback()
         {
-            if (args.RequiredSamples < 1)
-                return;
-
-            AudioFrame frame = GenerateAudioData(args.RequiredSamples);
-            sender.AddFrame(frame);
+            Graph.Start();
         }
 
-        unsafe private AudioFrame GenerateAudioData(int requiredSamples)
+        protected override void StopPlayback()
         {
+            Graph.Stop();
+        }
+
+        private unsafe void InputNodeQuantumStartedHandler(AudioFrameInputNode sender, FrameInputNodeQuantumStartedEventArgs args)
+        {
+            var requiredSamples = args.RequiredSamples;
+            if (requiredSamples < 1)
+                return;
+
             // Buffer size is (number of samples) * (size of each sample)
             // We choose to generate single channel (mono) audio. For multi-channel, multiply by number of channels
             uint bufferSizeElements = (uint)requiredSamples * NumChannels;
@@ -181,7 +115,7 @@ namespace RetriX.UWP.Services
                 }
             }
 
-            return frame;
+            sender.AddFrame(frame);
         }
     }
 }

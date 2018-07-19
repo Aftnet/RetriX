@@ -136,6 +136,15 @@ namespace RetriX.Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to IGS.
+        /// </summary>
+        internal static string ManufacturerNameIGS {
+            get {
+                return ResourceManager.GetString("ManufacturerNameIGS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to NEC.
         /// </summary>
         internal static string ManufacturerNameNEC {
@@ -402,6 +411,15 @@ namespace RetriX.Shared.Resources {
         internal static string SystemNamePlayStation {
             get {
                 return ResourceManager.GetString("SystemNamePlayStation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PolyGame Master.
+        /// </summary>
+        internal static string SystemNamePolyGameMaster {
+            get {
+                return ResourceManager.GetString("SystemNamePolyGameMaster", resourceCulture);
             }
         }
         

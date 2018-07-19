@@ -31,6 +31,7 @@ namespace RetriX.Shared.ViewModels
         public static GameSystemViewModel MakePCFX(ICore core, IFileSystem fileSystem) => new GameSystemViewModel(core, fileSystem, Strings.SystemNamePCFX, Strings.ManufacturerNameNEC, "\uf124", false, null, CDImageExtensions);
         public static GameSystemViewModel MakeWonderSwan(ICore core, IFileSystem fileSystem) => new GameSystemViewModel(core, fileSystem, Strings.SystemNameWonderSwan, Strings.ManufacturerNameBandai, "\uf129");
         public static GameSystemViewModel MakeNeoGeo(ICore core, IFileSystem fileSystem) => new GameSystemViewModel(core, fileSystem, Strings.SystemNameNeoGeo, Strings.ManufacturerNameSNK, "\uf102", false);
+        public static GameSystemViewModel MakeIGSPGM(ICore core, IFileSystem fileSystem) => new GameSystemViewModel(core, fileSystem, Strings.SystemNamePolyGameMaster, Strings.ManufacturerNameIGS, "\uf102", false);
         public static GameSystemViewModel MakeNeoGeoPocket(ICore core, IFileSystem fileSystem) => new GameSystemViewModel(core, fileSystem, Strings.SystemNameNeoGeoPocket, Strings.ManufacturerNameSNK, "\uf129");
         public static GameSystemViewModel MakeArcade(ICore core, IFileSystem fileSystem) => new GameSystemViewModel(core, fileSystem, Strings.SystemNameArcade, Strings.ManufacturerNameFBAlpha, "\uf102", true);
 

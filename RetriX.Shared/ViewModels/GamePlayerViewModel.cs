@@ -11,6 +11,7 @@ namespace RetriX.Shared.ViewModels
 {
     public class GamePlayerViewModel : MvxViewModel<GameLaunchEnvironment>
     {
+        private const string ForceDisplayTouchGamepadKey = "ForceDisplayTouchGamepad";
         private const string CurrentFilterKey = "CurrentFilter";
         private static readonly TimeSpan PriodicChecksInterval = TimeSpan.FromSeconds(2);
         private static readonly TimeSpan UIHidingTime = TimeSpan.FromSeconds(4);
@@ -94,14 +95,27 @@ namespace RetriX.Shared.ViewModels
         public bool ForceDisplayTouchGamepad
         {
             get => forceDisplayTouchGamepad;
-            set { if (SetProperty(ref forceDisplayTouchGamepad, value)) { RaisePropertyChanged(nameof(DisplayTouchGamepad)); } }
+            set
+            {
+                if (SetProperty(ref forceDisplayTouchGamepad, value))
+                {
+                    RaisePropertyChanged(nameof(DisplayTouchGamepad));
+                    Settings.AddOrUpdateValue(ForceDisplayTouchGamepadKey, ForceDisplayTouchGamepad);
+                }
+            }
         }
 
         private bool shouldDisplayTouchGamepad;
         private bool ShouldDisplayTouchGamepad
         {
             get => shouldDisplayTouchGamepad;
-            set { if (SetProperty(ref shouldDisplayTouchGamepad, value)) { RaisePropertyChanged(nameof(DisplayTouchGamepad)); } }
+            set
+            {
+                if (SetProperty(ref shouldDisplayTouchGamepad, value))
+                {
+                    RaisePropertyChanged(nameof(DisplayTouchGamepad));
+                }
+            }
         }
 
         private bool gameIsPaused;
@@ -137,6 +151,7 @@ namespace RetriX.Shared.ViewModels
             VideoService = videoService;
             Settings = settings;
 
+            ForceDisplayTouchGamepad = Settings.GetValueOrDefault(ForceDisplayTouchGamepadKey, false);
             ShouldDisplayTouchGamepad = PlatformService.ShouldDisplayTouchGamepad;
 
             TappedCommand = new MvxCommand(() =>

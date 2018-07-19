@@ -88,11 +88,20 @@ namespace RetriX.Shared.ViewModels
         public bool FullScreenChangingPossible => PlatformService.FullScreenChangingPossible;
         public bool IsFullScreenMode => PlatformService.IsFullScreenMode;
 
+        public bool DisplayTouchGamepad => ForceDisplayTouchGamepad || ShouldDisplayTouchGamepad;
+
+        private bool forceDisplayTouchGamepad;
+        public bool ForceDisplayTouchGamepad
+        {
+            get => forceDisplayTouchGamepad;
+            set { if (SetProperty(ref forceDisplayTouchGamepad, value)) { RaisePropertyChanged(nameof(DisplayTouchGamepad)); } }
+        }
+
         private bool shouldDisplayTouchGamepad;
-        public bool ShouldDisplayTouchGamepad
+        private bool ShouldDisplayTouchGamepad
         {
             get => shouldDisplayTouchGamepad;
-            private set => SetProperty(ref shouldDisplayTouchGamepad, value);
+            set { if (SetProperty(ref shouldDisplayTouchGamepad, value)) { RaisePropertyChanged(nameof(DisplayTouchGamepad)); } }
         }
 
         private bool gameIsPaused;

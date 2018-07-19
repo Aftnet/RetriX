@@ -62,8 +62,8 @@
         </canvas:CanvasAnimatedControl>
         <controls:PlayerOverlay ViewModel="{x:Bind VM}" VerticalAlignment="Bottom" Grid.Row="0" Grid.Column="1"
                                 Visibility="{x:Bind VM.DisplayPlayerUI, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"/>
-        <controls:VirtualPad x:Name="LeftVirtualPad" Style="{StaticResource LeftVirtualPadStyle}" ViewModel="{x:Bind VM}" Visibility="{x:Bind VM.ShouldDisplayTouchGamepad, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" Grid.Row="0" Grid.Column="0"/>
-        <controls:VirtualPad x:Name="RightVirtualPad" Style="{StaticResource RightVirtualPadStyle}" ViewModel="{x:Bind VM}" Visibility="{x:Bind VM.ShouldDisplayTouchGamepad, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" Grid.Row="0" Grid.Column="2"/>
+        <controls:VirtualPad x:Name="LeftVirtualPad" Style="{StaticResource LeftVirtualPadStyle}" ViewModel="{x:Bind VM}" Visibility="{x:Bind VM.DisplayTouchGamepad, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" Grid.Row="0" Grid.Column="0"/>
+        <controls:VirtualPad x:Name="RightVirtualPad" Style="{StaticResource RightVirtualPadStyle}" ViewModel="{x:Bind VM}" Visibility="{x:Bind VM.DisplayTouchGamepad, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" Grid.Row="0" Grid.Column="2"/>
         
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>

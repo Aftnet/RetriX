@@ -243,4 +243,7 @@
   <data name="S32XRomDescription.Text" xml:space="preserve">
     <value>SEGA 32X Rom</value>
   </data>
+  <data name="ForceDisplayTouchGamepadMenuFlyoutItem.Text" xml:space="preserve">
+    <value>Touch pad</value>
+  </data>
 </root>

@@ -147,6 +147,7 @@
             <TextBlock Text="&#xe115;" Style="{StaticResource GlyphStyle}"/>
             <Button.Flyout>
                 <MenuFlyout>
+                    <ToggleMenuFlyoutItem x:Uid="ForceDisplayTouchGamepadMenuFlyoutItem" Text="TouchPadDesign" IsChecked="{x:Bind ViewModel.ForceDisplayTouchGamepad, Mode=TwoWay}"/>
                     <MenuFlyoutSubItem x:Uid="FilteringMenuFlyoutItem" Text="FilteringDesign">
                         <ToggleMenuFlyoutItem x:Uid="NNFilteringMenuFlyout" IsChecked="{x:Bind ViewModel.NNFilteringSet, Mode=OneWay}" Command="{x:Bind ViewModel.SetNNFiltering}"/>
                         <ToggleMenuFlyoutItem x:Uid="LinearFilteringMenuFlyout" IsChecked="{x:Bind ViewModel.LinearFilteringSet, Mode=OneWay}" Command="{x:Bind ViewModel.SetLinearFiltering}"/>

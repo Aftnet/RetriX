@@ -10,8 +10,6 @@ namespace RetriX.Shared.ViewModels
 {
     public class GameSystemViewModel
     {
-        private static readonly FileDependency PGMDepsTemp = new FileDependency("pgm.zip", "IGS PolyGame Master Bios", "87cc944eef4c671aa2629a8ba48a08e0");
-
         private static readonly IEnumerable<FileDependency> NoDependencies = new FileDependency[0];
         private static HashSet<string> CDImageExtensions { get; } = new HashSet<string> { ".bin", ".cue", ".iso", ".mds", ".mdf" };
 
@@ -34,7 +32,7 @@ namespace RetriX.Shared.ViewModels
         public static GameSystemViewModel MakePCFX(ICore core, IFileSystem fileSystem) => new GameSystemViewModel(core, fileSystem, Strings.SystemNamePCFX, Strings.ManufacturerNameNEC, "\uf124", null, null, CDImageExtensions);
         public static GameSystemViewModel MakeWonderSwan(ICore core, IFileSystem fileSystem) => new GameSystemViewModel(core, fileSystem, Strings.SystemNameWonderSwan, Strings.ManufacturerNameBandai, "\uf129");
         public static GameSystemViewModel MakeNeoGeo(ICore core, IFileSystem fileSystem) => new GameSystemViewModel(core, fileSystem, Strings.SystemNameNeoGeo, Strings.ManufacturerNameSNK, "\uf102", new FileDependency[] { core.FileDependencies[0] });
-        public static GameSystemViewModel MakePolyGameMaster(ICore core, IFileSystem fileSystem) => new GameSystemViewModel(core, fileSystem, Strings.SystemNamePolyGameMaster, Strings.ManufacturerNameIGS, "\uf102", new FileDependency[] { PGMDepsTemp });
+        public static GameSystemViewModel MakePolyGameMaster(ICore core, IFileSystem fileSystem) => new GameSystemViewModel(core, fileSystem, Strings.SystemNamePolyGameMaster, Strings.ManufacturerNameIGS, "\uf102", new FileDependency[] { core.FileDependencies[1] });
         public static GameSystemViewModel MakeNeoGeoPocket(ICore core, IFileSystem fileSystem) => new GameSystemViewModel(core, fileSystem, Strings.SystemNameNeoGeoPocket, Strings.ManufacturerNameSNK, "\uf129");
         public static GameSystemViewModel MakeArcade(ICore core, IFileSystem fileSystem) => new GameSystemViewModel(core, fileSystem, Strings.SystemNameArcade, Strings.ManufacturerNameFBAlpha, "\uf102", NoDependencies);
 

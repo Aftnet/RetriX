@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace RetriX.UWP.Components
+namespace RetriX.Shared.Components
 {
-    internal static class FramebufferConverter
+    public static class FramebufferConverter
     {
         private const uint LookupTableSize = ushort.MaxValue + 1;
 

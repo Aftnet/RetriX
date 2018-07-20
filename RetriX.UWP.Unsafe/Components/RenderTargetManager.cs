@@ -1,9 +1,9 @@
 ﻿using LibRetriX;
 using Microsoft.Graphics.Canvas;
 using Retrix.UWP.Native;
+using RetriX.Shared.Components;
 using RetriX.Shared.Services;
 using System;
-using System.Collections.Generic;
 using System.Numerics;
 using Windows.Foundation;
 

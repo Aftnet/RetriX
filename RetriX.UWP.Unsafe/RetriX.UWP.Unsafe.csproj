@@ -115,9 +115,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Services\AudioService.cs" />
-    <Compile Include="Components\FramebufferConverter.cs" />
     <Compile Include="Components\IMemoryBufferByteAccess.cs" />
-    <Compile Include="Services\InputService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Components\RenderTargetManager.cs" />
     <Compile Include="Services\VideoService.cs" />

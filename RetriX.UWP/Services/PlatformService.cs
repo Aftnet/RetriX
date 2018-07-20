@@ -37,12 +37,13 @@ namespace RetriX.UWP.Services
 
         public bool IsFullScreenMode => AppView.IsFullScreenMode;
 
+        public bool TouchScreenAvailable => new TouchCapabilities().TouchPresent > 0;
+
         public bool ShouldDisplayTouchGamepad
         {
             get
             {
-                var touchCapabilities = new TouchCapabilities();
-                if (touchCapabilities.TouchPresent == 0)
+                if (!TouchScreenAvailable)
                 {
                     return false;
                 }

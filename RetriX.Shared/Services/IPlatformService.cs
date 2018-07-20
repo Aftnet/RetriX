@@ -11,6 +11,7 @@ namespace RetriX.Shared.Services
     {
         bool FullScreenChangingPossible { get; }
         bool IsFullScreenMode { get; }
+        bool TouchScreenAvailable { get; }
         bool ShouldDisplayTouchGamepad { get; }
         bool HandleGameplayKeyShortcuts { get; set; }
 

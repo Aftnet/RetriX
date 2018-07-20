@@ -251,4 +251,10 @@ Restart RetriX and try again.</value>
   <data name="SystemName32X" xml:space="preserve">
     <value>32X</value>
   </data>
+  <data name="ManufacturerNameIGS" xml:space="preserve">
+    <value>IGS</value>
+  </data>
+  <data name="SystemNamePolyGameMaster" xml:space="preserve">
+    <value>PolyGame Master</value>
+  </data>
 </root>

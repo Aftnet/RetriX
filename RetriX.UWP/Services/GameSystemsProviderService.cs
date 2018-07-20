@@ -34,6 +34,7 @@ namespace RetriX.UWP.Services
             yield return GameSystemViewModel.MakeArcade(LibRetriX.FBAlpha.Core.Instance, fileSystem);
             yield return GameSystemViewModel.MakeNeoGeoPocket(LibRetriX.BeetleNGP.Core.Instance, fileSystem);
             yield return GameSystemViewModel.MakeNeoGeo(LibRetriX.FBAlpha.Core.Instance, fileSystem);
+            yield return GameSystemViewModel.MakePolyGameMaster(LibRetriX.FBAlpha.Core.Instance, fileSystem);
         }
     }
 }

@@ -18,9 +18,9 @@ build:
   parallel: true 
   project: RetriX.sln
 
-before-build:
+before_build:
   - ps: $env:cert_thumbprint = (Import-PfxCertificate -FilePath SigningCertificate.pfx -CertStoreLocation $env:cert_store -Password (ConvertTo-SecureString -String $env:cert_password -AsPlainText -Force)).Thumbprint
   - ps: echo "Imported signing certificate. Thumbprint is $env:cert_thumbprint"
 
-after-build:
+after_build:
   - ps: Remove-Item -Path ("{0}\{1}" -f $env:cert_store, $env:cert_thumbprint)

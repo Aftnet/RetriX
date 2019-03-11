@@ -5,6 +5,8 @@ environment:
   cert_store: Cert:\CurrentUser\My
   cert_password:
     secure: IWZcxQHSysbhbZNMQ2U1BaANmhh8qQjJDr3mAePBdEQ=
+  test_encrypt:
+    secure: nhtnx2BfAl2XE7Vxu3GU4Q==
 
 branches:
   only:
@@ -19,7 +21,8 @@ build:
   project: RetriX.sln
 
 before_build:
-  - ps: $env:cert_thumbprint = (Import-PfxCertificate -FilePath SigningCertificate.pfx -CertStoreLocation $env:cert_store -Password (ConvertTo-SecureString -String $env:cert_password -AsPlainText -Force)).Thumbprint
+  - ps: echo "Var $env:test_encrypt"
+  - ps: $env:cert_thumbprint = (Import-PfxCertificate -FilePath SigningCertificate.pfx -CertStoreLocation "$env:cert_store" -Password (ConvertTo-SecureString -String "$env:cert_password" -AsPlainText -Force)).Thumbprint
   - ps: echo "Imported signing certificate. Thumbprint is $env:cert_thumbprint"
 
 after_build:

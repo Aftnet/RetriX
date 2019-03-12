@@ -25,8 +25,8 @@ before_build:
 #  - ps: echo "Imported signing certificate. Thumbprint is $env:cert_thumbprint"
 
 build_script:
-  - ps: nuget restore
-  - ps: msbuild RetriX.UWP\Retrix.UWP.csproj /p:Configuration=Release;Platform=x86;AppxBundle=Always;AppxBundlePlatforms="x86|x64|ARM"
+  - cmd: nuget restore
+  - cmd: msbuild RetriX.UWP\Retrix.UWP.csproj /p:Configuration=$env:configuration;Platform=x86;AppxBundle=Always;AppxBundlePlatforms="x86|x64|ARM"
 
 #after_build:
 #  - ps: Remove-Item -Path ("{0}\{1}" -f $env:cert_store, $env:cert_thumbprint)

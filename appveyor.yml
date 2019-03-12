@@ -2,7 +2,6 @@ version: 2.1.{build}.0
 image: Visual Studio 2017
 
 environment:
-  cert_store: Cert:\CurrentUser\My
   cert_password:
     secure: DtOAA160sv4uOE2DYCr+QPAM+XLGKd/Z08cf/2nAQ4g=
 
@@ -15,10 +14,11 @@ shallow_clone: true
 configuration: Release
 
 build_script:
-  - ps: '[xml]$manifest = Get-Content "Retrix.UWP\Package.appxmanifest";$manifest.Package.Identity.Version="$env:version";$manifest.Save("$pwd\Retrix.UWP\Package.appxmanifest")'
+  - ps: echo BV $env:appveyor_build_version
+  - ps: '[xml]$manifest = Get-Content "Retrix.UWP\Package.appxmanifest";$manifest.Package.Identity.Version="$env:appveyor_build_version";$manifest.Save("$pwd\Retrix.UWP\Package.appxmanifest")'
   - ps: nuget restore
   - cmd: msbuild RetriX.UWP\Retrix.UWP.csproj /p:Configuration=%configuration%;Platform=x86;AppxBundle=Always;AppxBundlePlatforms="x86|x64|ARM"
-  - ps: signtool sign /fd SHA256 /f RetriX.UWP\SigningCert_Release.pfx /p ${env:cert_password} /tr http://tsa.startssl.com/rfc3161 RetriX.UWP\AppPackages\Retrix.UWP_${env:version}_Test\Retrix.UWP_${env:version}_x86_x64_ARM.appxbundle
+  - ps: signtool sign /fd SHA256 /f RetriX.UWP\SigningCert_Release.pfx /p ${env:cert_password} /tr http://tsa.startssl.com/rfc3161 RetriX.UWP\AppPackages\Retrix.UWP_${env:appveyor_build_version}_Test\Retrix.UWP_${env:appveyor_build_version}_x86_x64_ARM.appxbundle
 
 artifacts:
   - path: 'RetriX.UWP\AppPackages\**\*.appxbundle'

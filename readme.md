@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/dx4l9e29md9v4i8h?svg=true)](https://ci.appveyor.com/project/Aftnet/retrix)
+
 # RetriX
 
 RetriX is an emulator front end for UWP, on all the hardware platforms it supports: it serves the same purpose as RetroArch but is built from the ground up to integrate as well as possible with Windows.

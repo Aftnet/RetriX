@@ -4,7 +4,7 @@ image: Visual Studio 2017
 environment:
   cert_store: Cert:\CurrentUser\My
   cert_password:
-    secure: JxTdA0Qblwql3thdV4h3jVSWfMCQgmjKPoBZgEiLMOs=
+    secure: DtOAA160sv4uOE2DYCr+QPAM+XLGKd/Z08cf/2nAQ4g=
 
 branches:
   only:
@@ -19,7 +19,9 @@ build:
   project: RetriX.sln
 
 before_build:
-  - ps: $env:cert_thumbprint = (Import-PfxCertificate -FilePath SigningCertificate.pfx -CertStoreLocation "$env:cert_store" -Password (ConvertTo-SecureString -String "$env:cert_password" -AsPlainText -Force)).Thumbprint
+  - ps: $pwd = ConvertTo-SecureString -String "$env:cert_password" -AsPlainText -Force
+  - ps: $env:cert_thumbprint = (Import-PfxCertificate -FilePath ".\RetriX.UWP\SigningCert_Release.pfx" -CertStoreLocation "$env:cert_store" -Password $pwd).Thumbprint
+  - ps: $pwd = $null
   - ps: echo "Imported signing certificate. Thumbprint is $env:cert_thumbprint"
 
 after_build:

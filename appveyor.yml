@@ -1,4 +1,4 @@
-version: 1.0.{build}
+version: 1.0.{build}.0
 image: Visual Studio 2017
 
 environment:
@@ -23,7 +23,10 @@ before_build:
 #  - ps: $env:cert_thumbprint = (Import-PfxCertificate -FilePath ".\RetriX.UWP\SigningCert_Release.pfx" -CertStoreLocation "$env:cert_store" -Password $pwd).Thumbprint
 #  - ps: $pwd = $null
 #  - ps: echo "Imported signing certificate. Thumbprint is $env:cert_thumbprint"
+
+build_script:
   - ps: nuget restore
+  - ps: msbuild RetriX.UWP\Retrix.UWP.csproj /p:Configuration=Release;Platform=x86;AppxBundle=Always;AppxBundlePlatforms="x86|x64|ARM"
 
 #after_build:
 #  - ps: Remove-Item -Path ("{0}\{1}" -f $env:cert_store, $env:cert_thumbprint)

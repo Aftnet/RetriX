@@ -3,7 +3,7 @@ image: Visual Studio 2017
 
 environment:
   cert_password:
-    secure: DtOAA160sv4uOE2DYCr+QPAM+XLGKd/Z08cf/2nAQ4g=
+    secure: jqsEh3FCK0/rF+3rBWxTY135zB/nlwX6yovv/PYAx0Q=
 
 branches:
   only:

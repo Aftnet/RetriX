@@ -14,7 +14,7 @@ shallow_clone: true
 configuration: Release
 
 build_script:
-  - ps: 'Import-PfxCertificate -FilePath ".\RetriX.UWP\SigningCert_Release.pfx" -Password (ConvertTo-SecureString -String "t76mJyBH8Hj6ggvL" -AsPlainText -Force) -CertStoreLocation "Cert:\CurrentUser\My\"'
+  - ps: 'Import-PfxCertificate -FilePath ".\RetriX.UWP\SigningCert_Release.pfx" -Password (ConvertTo-SecureString -String "password" -AsPlainText -Force) -CertStoreLocation "Cert:\CurrentUser\My\"'
 #  - ps: '[xml]$proj_xml=Get-Content .\RetriX.UWP\RetriX.UWP.csproj;$target_sdk_ver=$proj_xml.Project.PropertyGroup[0].TargetPlatformVersion.ChildNodes[0].Data'
 #  - ps: '&"${env:ProgramFiles(x86)}\Windows Kits\10\bin\$target_sdk_ver\x86\signtool.exe" sign /fd SHA256 /f RetriX.UWP\SigningCert_Release.pfx /p ${env:cert_password} /tr http://timestamp.comodoca.com /td SHA256 RetriX.UWP\AppPackages\Retrix.UWP_${env:appveyor_build_version}_Test\Retrix.UWP_${env:appveyor_build_version}_x86_x64_ARM.appxbundle'
   - ps: '[xml]$manifest = Get-Content "Retrix.UWP\Package.appxmanifest";$manifest.Package.Identity.Version="$env:appveyor_build_version";$manifest.Save("$pwd\Retrix.UWP\Package.appxmanifest")'

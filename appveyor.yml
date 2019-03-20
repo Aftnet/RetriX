@@ -17,7 +17,7 @@ configuration: Release
 
 before_build:
   - ps: '$cert = (Import-PfxCertificate -FilePath ".\RetriX.UWP\SigningCert_Release.pfx" -Password (ConvertTo-SecureString -String "$env:cert_password" -AsPlainText -Force) -CertStoreLocation "Cert:\CurrentUser\My\").Thumbprint'
-  - ps: '$env:cert_thumbprint = "$($cert.Thumbprint)"; $cert_subject = "$($cert.Subject)"; $cert=$null'
+  - ps: '$env:cert_thumbprint = "$($cert.Thumbprint)"; $cert_subject = "$($cert.Subject)"'
   - ps: 'echo $cert_subject'
   - ps: '[xml]$manifest = Get-Content "$env:appx_manifest_path"; $manifest.Package.Identity.Publisher="$env:cert_subject"; $manifest.Save("$pwd\$env:appx_manifest_path")'
   - ps: '[xml]$projfile = Get-Content "$env:appx_project_path"; $projfile.Project.PropertyGroup[0].PackageCertificateKeyFile = "";  $projfile.Project.PropertyGroup[0].PackageCertificateThumbprint = "$env:cert_thumbprint"; $projfile.Save("$pwd\$env:appx_project_path")'

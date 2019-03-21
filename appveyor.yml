@@ -7,7 +7,6 @@ environment:
   cert_password:
     secure: JjPBLfMO/rsSFxtpY/FXyfduELdRu7Srmp/60D2GCGI=
 
-
 shallow_clone: true
 
 configuration: Release
@@ -26,15 +25,18 @@ for:
 
   after_build:
     - ps: '&"${env:ProgramFiles(x86)}\Windows Kits\10\bin\$target_sdk_ver\x86\signtool.exe" sign /fd SHA256 /n ($cert_subject -replace "CN=", "") /tr http://timestamp.comodoca.com /td SHA256 RetriX.UWP\AppPackages\Retrix.UWP_${env:appveyor_build_version}_Test\Retrix.UWP_${env:appveyor_build_version}_x86_x64_ARM.appxbundle'
+    - ps: 'Remove-Item Cert:\CurrentUser\My\$cert_thumbprint'
 
 build_script:
   - ps: '[xml]$manifest = Get-Content "$env:appx_manifest_path"; $manifest.Package.Identity.Version="$env:appveyor_build_version"; $manifest.Save("$pwd\$env:appx_manifest_path")'
   - ps: '&nuget restore'
   - cmd: 'msbuild RetriX.UWP\Retrix.UWP.csproj /p:Configuration=%configuration%;Platform=x86;AppxBundle=Always;AppxBundlePlatforms="x86|x64|ARM"'
+  - ps: 'Get-ChildItem -Path ".\RetriX.UWP\AppPackages" -Recurse -Include *.appx | foreach { Move-Item -Path $_.FullName -Destination ($_.FullName -ireplace "Dependencies\\([^\\]+)\\", "Dependencies_`$1_") }'
 
 artifacts:
   - path: 'RetriX.UWP\AppPackages\**\*.appxbundle'
   - path: 'RetriX.UWP\AppPackages\**\*.appx'
+  - path: 'RetriX.UWP\AppPackages\**\*.cer'
 
 deploy:
   release: 'RetriX $(appveyor_build_version)'
@@ -42,7 +44,7 @@ deploy:
   provider: GitHub
   auth_token:
     secure: Ga1vJwSkMx/ROSTqlxxo0L7touNFoTIP8bXuy8i0RkPHx2SyumQB+9vEoTepJJfX
-  artifact: '/.*\.appxbundle/,/.*\.appx/'
+  artifact: '/.*\.appxbundle/,/.*\.appx/,/.*\.cer/'
   draft: true
   prerelease: false
   on:

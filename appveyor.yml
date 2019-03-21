@@ -1,0 +1,52 @@
+version: 2.1.{build}.0
+image: Visual Studio 2017
+
+environment:
+  appx_manifest_path: 'Retrix.UWP\Package.appxmanifest'
+  appx_project_path: 'Retrix.UWP\RetriX.UWP.csproj'
+  cert_store_location: 'Cert:\CurrentUser\My\'
+  cert_password:
+    secure: JjPBLfMO/rsSFxtpY/FXyfduELdRu7Srmp/60D2GCGI=
+
+shallow_clone: true
+branches:
+  only:
+    - master
+
+configuration: Release
+
+before_build:
+  - ps: 'if($env:cert_password -eq $null) { $cert = (Import-PfxCertificate -FilePath ".\RetriX.UWP\SigningCert_Development.pfx" -CertStoreLocation "$env:cert_store_location") }'
+  - ps: 'if($env:cert_password -ne $null) { $cert = (Import-PfxCertificate -FilePath ".\RetriX.UWP\SigningCert_Release.pfx" -Password (ConvertTo-SecureString -String "$env:cert_password" -AsPlainText -Force) -CertStoreLocation "$env:cert_store_location") }'
+  - ps: '[string]$cert_thumbprint = "$($cert.Thumbprint)"; [string]$cert_subject = "$($cert.Subject)"; $cert=$null'
+  - ps: 'echo "Building with: $cert_subject, thumbprint: $cert_thumbprint"'
+  - ps: '[xml]$manifest = Get-Content "$env:appx_manifest_path"; $manifest.Package.Identity.Publisher=$cert_subject; $manifest.Save("$pwd\$env:appx_manifest_path")'
+  - ps: '[xml]$projfile = Get-Content "$env:appx_project_path"; $target_sdk_ver=$projfile.Project.PropertyGroup[0].TargetPlatformVersion.ChildNodes[0].Data; $projfile.Project.PropertyGroup[0].PackageCertificateKeyFile = ""; $projfile.Project.PropertyGroup[0].PackageCertificateThumbprint = $cert_thumbprint; $projfile.Save("$pwd\$env:appx_project_path")'
+
+build_script:
+  - ps: '[xml]$manifest = Get-Content "$env:appx_manifest_path"; $manifest.Package.Identity.Version="$env:appveyor_build_version"; $manifest.Save("$pwd\$env:appx_manifest_path")'
+  - ps: '&nuget restore'
+  - cmd: 'msbuild RetriX.UWP\Retrix.UWP.csproj /p:Configuration=%configuration%;Platform=x86;AppxBundle=Always;AppxBundlePlatforms="x86|x64|ARM"'
+  - ps: 'Get-ChildItem -Path ".\RetriX.UWP\AppPackages" -Recurse -Include *.appx | foreach { Move-Item -Path $_.FullName -Destination ($_.FullName -ireplace "Dependencies\\([^\\]+)\\", "Dependencies_`$1_") }'
+
+after_build:
+  - ps: '&"${env:ProgramFiles(x86)}\Windows Kits\10\bin\$target_sdk_ver\x86\signtool.exe" sign /fd SHA256 /n ($cert_subject -replace "CN=", "") /tr http://timestamp.comodoca.com /td SHA256 RetriX.UWP\AppPackages\Retrix.UWP_${env:appveyor_build_version}_Test\Retrix.UWP_${env:appveyor_build_version}_x86_x64_ARM.appxbundle'
+  - ps: 'Remove-Item Cert:\CurrentUser\My\$cert_thumbprint'
+
+artifacts:
+  - path: 'RetriX.UWP\AppPackages\**\*.appxbundle'
+  - path: 'RetriX.UWP\AppPackages\**\*.appx'
+
+deploy:
+  release: 'RetriX $(appveyor_build_version)'
+  force_update: true
+  description: 'Release description'
+  provider: GitHub
+  auth_token:
+    secure: Ga1vJwSkMx/ROSTqlxxo0L7touNFoTIP8bXuy8i0RkPHx2SyumQB+9vEoTepJJfX
+  artifact: '/.*\.appxbundle/,/.*\.appx/'
+  draft: true
+  prerelease: false
+  on:
+    branch: master
+#    APPVEYOR_REPO_TAG: true

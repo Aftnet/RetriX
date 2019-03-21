@@ -35,3 +35,16 @@ build_script:
 artifacts:
   - path: 'RetriX.UWP\AppPackages\**\*.appxbundle'
   - path: 'RetriX.UWP\AppPackages\**\*.appx'
+
+deploy:
+  release: 'RetriX $(appveyor_build_version)'
+  description: 'Release description'
+  provider: GitHub
+  auth_token:
+    secure: Ga1vJwSkMx/ROSTqlxxo0L7touNFoTIP8bXuy8i0RkPHx2SyumQB+9vEoTepJJfX
+  artifact: '/.*\.appxbundle/,/.*\.appx/'
+  draft: true
+  prerelease: false
+  on:
+    branch: build
+#    APPVEYOR_REPO_TAG: true

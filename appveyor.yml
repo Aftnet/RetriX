@@ -15,7 +15,7 @@ for:
 -
   branches:
     only:
-      - build
+      - master
 
   before_build:
     - ps: '$cert = (Import-PfxCertificate -FilePath ".\RetriX.UWP\SigningCert_Release.pfx" -Password (ConvertTo-SecureString -String "$env:cert_password" -AsPlainText -Force) -CertStoreLocation "Cert:\CurrentUser\My\")'
@@ -36,17 +36,17 @@ build_script:
 artifacts:
   - path: 'RetriX.UWP\AppPackages\**\*.appxbundle'
   - path: 'RetriX.UWP\AppPackages\**\*.appx'
-  - path: 'RetriX.UWP\AppPackages\**\*.cer'
 
 deploy:
   release: 'RetriX $(appveyor_build_version)'
+  force_update: true
   description: 'Release description'
   provider: GitHub
   auth_token:
     secure: Ga1vJwSkMx/ROSTqlxxo0L7touNFoTIP8bXuy8i0RkPHx2SyumQB+9vEoTepJJfX
-  artifact: '/.*\.appxbundle/,/.*\.appx/,/.*\.cer/'
+  artifact: '/.*\.appxbundle/,/.*\.appx/'
   draft: true
   prerelease: false
   on:
-    branch: build
+    branch: master
 #    APPVEYOR_REPO_TAG: true

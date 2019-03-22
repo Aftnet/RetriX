@@ -1,4 +1,4 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/dx4l9e29md9v4i8h?svg=true)](https://ci.appveyor.com/project/Aftnet/retrix)
+[![Build status](https://ci.appveyor.com/api/projects/status/dx4l9e29md9v4i8h/branch/master?svg=true)](https://ci.appveyor.com/project/Aftnet/retrix/branch/master)
 
 # RetriX
 

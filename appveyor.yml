@@ -40,11 +40,11 @@ artifacts:
 deploy:
   release: 'RetriX $(appveyor_build_version)'
   force_update: true
-  description: 'Release description'
+  description: '$(appveyor_repo_commit_message)'
   provider: GitHub
   auth_token:
     secure: Ga1vJwSkMx/ROSTqlxxo0L7touNFoTIP8bXuy8i0RkPHx2SyumQB+9vEoTepJJfX
-  artifact: '/.*\.appxbundle/,/.*\.appx/'
+  artifact: '/.+/'
   draft: true
   prerelease: false
   on:

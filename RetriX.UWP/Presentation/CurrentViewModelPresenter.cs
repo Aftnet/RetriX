@@ -1,5 +1,6 @@
-﻿using MvvmCross.Core.ViewModels;
-using MvvmCross.Uwp.Views;
+﻿using MvvmCross.Platforms.Uap.Presenters;
+using MvvmCross.Platforms.Uap.Views;
+using MvvmCross.ViewModels;
 using RetriX.Shared.Presentation;
 
 namespace RetriX.UWP.Presentation

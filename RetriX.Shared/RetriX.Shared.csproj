@@ -13,7 +13,7 @@
   <ItemGroup>
     <PackageReference Include="Acr.UserDialogs" Version="6.5.1" />
     <PackageReference Include="LibRetriX" Version="0.1.29" />
-    <PackageReference Include="MvvmCross.Core" Version="5.7.0" />
+    <PackageReference Include="MvvmCross" Version="6.2.3" />
     <PackageReference Include="Plugin.VersionTracking" Version="2.1.0" />
     <PackageReference Include="System.IO.Compression.ZipFile" Version="4.3.0" />
     <PackageReference Include="System.Memory" Version="4.5.4" />

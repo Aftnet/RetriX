@@ -1,6 +1,7 @@
 ﻿using Acr.UserDialogs;
-using MvvmCross.Core.Navigation;
-using MvvmCross.Core.ViewModels;
+using MvvmCross.Commands;
+using MvvmCross.Navigation;
+using MvvmCross.ViewModels;
 using Plugin.FileSystem.Abstractions;
 using RetriX.Shared.Models;
 using RetriX.Shared.Services;

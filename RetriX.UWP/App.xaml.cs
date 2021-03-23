@@ -1,9 +1,11 @@
-﻿using MvvmCross.Core.ViewModels;
-using MvvmCross.Platform;
+﻿using MvvmCross;
+using MvvmCross.ViewModels;
 using Plugin.FileSystem.Abstractions;
+using RetriX.Shared.Services;
 using RetriX.UWP.Pages;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Storage;
@@ -21,10 +23,6 @@ namespace RetriX.UWP
     {
         private Frame RootFrame => Window.Current.Content as Frame;
 
-        /// <summary>
-        /// Initializes the singleton application object.  This is the first line of authored code
-        /// executed, and as such is the logical equivalent of main() or WinMain().
-        /// </summary>
         public App()
         {
             RequiresPointerMode = ApplicationRequiresPointerMode.WhenRequested;
@@ -33,25 +31,20 @@ namespace RetriX.UWP
             this.Suspending += OnSuspending;
         }
 
-        /// <summary>
-        /// Invoked when the application is launched normally by the end user.  Other entry points
-        /// will be used such as when the application is launched to open a specific file.
-        /// </summary>
-        /// <param name="e">Details about the launch request and process.</param>
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
-            InitializeApp(e.PreviousExecutionState, e.PrelaunchActivated, null);
+            await InitializeApp(e.PreviousExecutionState, e.PrelaunchActivated, null);
         }
 
-        protected override void OnFileActivated(FileActivatedEventArgs e)
+        protected override async void OnFileActivated(FileActivatedEventArgs e)
         {
             var file = e.Files.First(d => d is IStorageFile);
             var wrappedFile = new Plugin.FileSystem.FileInfo((StorageFile)file);
 
-            InitializeApp(e.PreviousExecutionState, false, wrappedFile);
+            await InitializeApp(e.PreviousExecutionState, false, wrappedFile);
         }
 
-        private void InitializeApp(ApplicationExecutionState previousExecutionState, bool prelaunchActivated, IFileInfo file)
+        private async Task InitializeApp(ApplicationExecutionState previousExecutionState, bool prelaunchActivated, IFileInfo file)
         {
             var rootFrame = RootFrame;
 
@@ -81,12 +74,19 @@ namespace RetriX.UWP
                     // configuring the new page by passing required information as a navigation
                     // parameter
 
-                    var setup = new Setup(rootFrame);
-                    setup.Initialize();
-                }
+                    var setup = new Setup();
+                    setup.PlatformInitialize(rootFrame);
+                    setup.InitializePrimary();
+                    setup.InitializeSecondary();
 
-                var start = Mvx.Resolve<IMvxAppStart>();
-                start.Start(file);
+                    var start = Mvx.Resolve<IMvxAppStart>();
+                    await start.StartAsync(file);
+                }
+                else
+                {
+                    var postLoadService = Mvx.Resolve<PostLoadService>();
+                    await postLoadService.PerformNavigation(file);
+                }
 
                 // Ensure the current window is active
                 Window.Current.Activate();

@@ -1,5 +1,5 @@
-﻿using MvvmCross.Core.ViewModels;
-using MvvmCross.Core.Views;
+﻿using MvvmCross.Presenters;
+using MvvmCross.ViewModels;
 
 namespace RetriX.Shared.Presentation
 {

@@ -1,8 +1,9 @@
-﻿using MvvmCross.Core.ViewModels;
-using MvvmCross.Platform;
-using MvvmCross.Platform.Logging;
-using MvvmCross.Uwp.Platform;
-using MvvmCross.Uwp.Views;
+﻿using MvvmCross;
+using MvvmCross.Logging;
+using MvvmCross.Platforms.Uap.Core;
+using MvvmCross.Platforms.Uap.Presenters;
+using MvvmCross.Platforms.Uap.Views;
+using MvvmCross.ViewModels;
 using RetriX.Shared.Presentation;
 using RetriX.Shared.Services;
 using RetriX.UWP.Presentation;
@@ -13,10 +14,13 @@ namespace RetriX.UWP
 {
     public class Setup : MvxWindowsSetup
     {
-        private CurrentViewModelPresenter Presenter;
-
-        public Setup(Frame rootFrame) : base(rootFrame)
+        public Setup() : base()
         {
+        }
+
+        public override void PlatformInitialize(Frame rootFrame, string suspensionManagerSessionStateKey = null)
+        {
+            base.PlatformInitialize(rootFrame, suspensionManagerSessionStateKey);
         }
 
         protected override IMvxApplication CreateApp()
@@ -39,14 +43,14 @@ namespace RetriX.UWP
 
         protected override IMvxWindowsViewPresenter CreateViewPresenter(IMvxWindowsFrame rootFrame)
         {
-            Presenter = new CurrentViewModelPresenter(rootFrame);
-            Mvx.RegisterSingleton<ICurrentViewModelPresenter>(Presenter);
-            return Presenter;
+            var presenter = new CurrentViewModelPresenter(rootFrame);
+            Mvx.RegisterSingleton<ICurrentViewModelPresenter>(presenter);
+            return presenter;
         }
 
-        protected override MvxLogProviderType GetDefaultLogProviderType()
+        public override MvxLogProviderType GetDefaultLogProviderType()
         {
-            return MvxLogProviderType.None;
+            return MvxLogProviderType.Console;
         }
     }
 

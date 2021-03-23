@@ -1,33 +1,36 @@
 ﻿<views:MvxWindowsPage
     x:Class="RetriX.UWP.Pages.AboutView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:views="using:MvvmCross.Uwp.Views"
+    xmlns:views="using:MvvmCross.Platforms.Uap.Views"
     mc:Ignorable="d">
 
     <views:MvxWindowsPage.Resources>
         <Style x:Key="SectionTBStyle" TargetType="TextBlock">
-            <Setter Property="Margin" Value="0,32,0,0"/>
+            <Setter Property="Margin" Value="0,32,0,0" />
         </Style>
     </views:MvxWindowsPage.Resources>
 
     <ScrollViewer Style="{StaticResource RootScrollViewerStyle}">
-        <StackPanel Orientation="Vertical" Margin="{StaticResource DafaultContentMargin}">
-            <TextBlock x:Uid="AboutHeader" Style="{StaticResource PageHeaderTextBlockStyle}"/>
-            <TextBlock x:Uid="AppName" Text="AppNameDes" Style="{ThemeResource HeaderTextBlockStyle}"/>
+        <StackPanel Margin="{StaticResource DafaultContentMargin}" Orientation="Vertical">
+            <TextBlock x:Uid="AboutHeader" Style="{StaticResource PageHeaderTextBlockStyle}" />
+            <TextBlock
+                x:Uid="AppName"
+                Style="{ThemeResource HeaderTextBlockStyle}"
+                Text="AppNameDes" />
             <TextBlock Style="{StaticResource SectionTBStyle}">
-                <Run x:Uid="VersionLabel" Text="VersionDesign"/> <Run Text="{x:Bind VM.Version}"/>
-                <LineBreak/>
-                <Run x:Uid="CopyrightLabel" Text="CopyrightDesign"/> <Hyperlink NavigateUri="https://www.aftnet.net">Aftnet</Hyperlink>
+                <Run x:Uid="VersionLabel" Text="VersionDesign" /> <Run Text="{x:Bind VM.Version}" />
+                <LineBreak />
+                <Run x:Uid="CopyrightLabel" Text="CopyrightDesign" /> <Hyperlink NavigateUri="https://www.aftnet.net">Aftnet</Hyperlink>
             </TextBlock>
             <TextBlock Style="{StaticResource SectionTBStyle}">
-                <Run x:Uid="EmulationCodeThanksToLabel" Text="EmuCoreThanks"/> <Hyperlink NavigateUri="https://www.libretro.com/">Libretro</Hyperlink>
+                <Run x:Uid="EmulationCodeThanksToLabel" Text="EmuCoreThanks" /> <Hyperlink NavigateUri="https://www.libretro.com/">Libretro</Hyperlink>
             </TextBlock>
             <TextBlock Style="{StaticResource SectionTBStyle}">
-                <Hyperlink NavigateUri="http://www.flaticon.com/packs/gaming-4">Playing Videogames icon pack</Hyperlink> 
-                <Run x:Uid="IconsDesignedByLabel" Text="DesignedBy"/> <Hyperlink NavigateUri="http://www.flaticon.com/authors/freepik">Freepik</Hyperlink>
+                <Hyperlink NavigateUri="http://www.flaticon.com/packs/gaming-4">Playing Videogames icon pack</Hyperlink>
+                <Run x:Uid="IconsDesignedByLabel" Text="DesignedBy" /> <Hyperlink NavigateUri="http://www.flaticon.com/authors/freepik">Freepik</Hyperlink>
             </TextBlock>
         </StackPanel>
     </ScrollViewer>

@@ -1,5 +1,6 @@
-﻿using MvvmCross.Core.Navigation;
-using MvvmCross.Core.ViewModels;
+﻿using MvvmCross.Commands;
+using MvvmCross.Navigation;
+using MvvmCross.ViewModels;
 using Plugin.Settings.Abstractions;
 using RetriX.Shared.Models;
 using RetriX.Shared.Services;
@@ -340,7 +341,7 @@ namespace RetriX.Shared.ViewModels
             var displayTouchGamepad = PlatformService.ShouldDisplayTouchGamepad;
             if (ShouldDisplayTouchGamepad != displayTouchGamepad)
             {
-                Dispatcher.RequestMainThreadAction(() => ShouldDisplayTouchGamepad = displayTouchGamepad);
+                AsyncDispatcher.ExecuteOnMainThreadAsync(() => ShouldDisplayTouchGamepad = displayTouchGamepad);
             }
 
             if (GameIsPaused)
@@ -352,12 +353,12 @@ namespace RetriX.Shared.ViewModels
 
             if (currentTime.Subtract(LastPointerMoveTime).CompareTo(UIHidingTime) >= 0)
             {
-                Dispatcher.RequestMainThreadAction(() => PlatformService.ChangeMousePointerVisibility(MousePointerVisibility.Hidden));
+                AsyncDispatcher.ExecuteOnMainThreadAsync(() => PlatformService.ChangeMousePointerVisibility(MousePointerVisibility.Hidden));
             }
 
             if (currentTime.Subtract(PlayerUIDisplayTime).CompareTo(UIHidingTime) >= 0)
             {
-                Dispatcher.RequestMainThreadAction(() => DisplayPlayerUI = false);
+                AsyncDispatcher.ExecuteOnMainThreadAsync(() => DisplayPlayerUI = false);
             }
         }
     }

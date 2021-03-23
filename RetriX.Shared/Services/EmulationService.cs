@@ -1,6 +1,6 @@
 ﻿using Acr.UserDialogs;
 using LibRetriX;
-using MvvmCross.Platform.Core;
+using MvvmCross.Base;
 using Plugin.FileSystem.Abstractions;
 using Plugin.LocalNotifications.Abstractions;
 using RetriX.Shared.StreamProviders;

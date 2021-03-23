@@ -1,26 +1,33 @@
 ﻿<views:MvxWindowsPage
     x:Class="RetriX.UWP.Pages.SettingsView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:views="using:MvvmCross.Uwp.Views"
-    xmlns:nmu="using:NavigationMenuUWP"
-    xmlns:vm="using:RetriX.Shared.ViewModels"
     xmlns:controls="using:RetriX.UWP.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:views="using:MvvmCross.Platforms.Uap.Views"
+    xmlns:vm="using:RetriX.Shared.ViewModels"
     mc:Ignorable="d">
 
     <views:MvxWindowsPage.Resources>
         <DataTemplate x:Key="FileImporterDT" x:DataType="vm:FileImporterViewModel">
-            <controls:FileImporter VM="{x:Bind}"/>
+            <controls:FileImporter VM="{x:Bind}" />
         </DataTemplate>
     </views:MvxWindowsPage.Resources>
 
     <ScrollViewer Style="{StaticResource RootScrollViewerStyle}">
-        <StackPanel Orientation="Vertical" Margin="{StaticResource DafaultContentMargin}">
-            <TextBlock x:Uid="SettingsHeader" Style="{StaticResource PageHeaderTextBlockStyle}"/>
-            <TextBlock x:Uid="BiosFilesHeader" Style="{ThemeResource SubheaderTextBlockStyle}" Text="BiosFilesDesign" Margin="0,0,0,16"/>
-            <ItemsControl ItemsSource="{x:Bind VM.FileDependencyImporters, Mode=OneWay}" ItemTemplate="{StaticResource FileImporterDT}" XYFocusKeyboardNavigation="Enabled" IsFocusEngagementEnabled="True"/>
+        <StackPanel Margin="{StaticResource DafaultContentMargin}" Orientation="Vertical">
+            <TextBlock x:Uid="SettingsHeader" Style="{StaticResource PageHeaderTextBlockStyle}" />
+            <TextBlock
+                x:Uid="BiosFilesHeader"
+                Margin="0,0,0,16"
+                Style="{ThemeResource SubheaderTextBlockStyle}"
+                Text="BiosFilesDesign" />
+            <ItemsControl
+                IsFocusEngagementEnabled="True"
+                ItemTemplate="{StaticResource FileImporterDT}"
+                ItemsSource="{x:Bind VM.FileDependencyImporters, Mode=OneWay}"
+                XYFocusKeyboardNavigation="Enabled" />
         </StackPanel>
     </ScrollViewer>
 </views:MvxWindowsPage>

@@ -1,4 +1,4 @@
-﻿using MvvmCross.Uwp.Views;
+﻿using MvvmCross.Platforms.Uap.Views;
 using RetriX.Shared.ViewModels;
 
 namespace RetriX.UWP.Pages

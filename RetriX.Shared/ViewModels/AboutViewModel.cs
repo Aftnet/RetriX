@@ -1,4 +1,4 @@
-﻿using MvvmCross.Core.ViewModels;
+﻿using MvvmCross.ViewModels;
 using Plugin.VersionTracking.Abstractions;
 
 namespace RetriX.Shared.ViewModels

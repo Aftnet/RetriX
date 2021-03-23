@@ -1,6 +1,6 @@
 ﻿using Acr.UserDialogs;
 using LibRetriX;
-using MvvmCross.Core.ViewModels;
+using MvvmCross.ViewModels;
 using Plugin.FileSystem.Abstractions;
 using RetriX.Shared.Services;
 using System.Collections.Generic;

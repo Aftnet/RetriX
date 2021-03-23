@@ -1,5 +1,5 @@
-﻿using MvvmCross.Platform;
-using MvvmCross.Uwp.Views;
+﻿using MvvmCross;
+using MvvmCross.Platforms.Uap.Views;
 using RetriX.Shared.Services;
 using RetriX.Shared.ViewModels;
 

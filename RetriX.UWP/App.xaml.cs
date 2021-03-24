@@ -79,12 +79,12 @@ namespace RetriX.UWP
                     setup.InitializePrimary();
                     setup.InitializeSecondary();
 
-                    var start = Mvx.Resolve<IMvxAppStart>();
+                    var start = Mvx.IoCProvider.Resolve<IMvxAppStart>();
                     await start.StartAsync(file);
                 }
                 else
                 {
-                    var postLoadService = Mvx.Resolve<PostLoadService>();
+                    var postLoadService = Mvx.IoCProvider.Resolve<PostLoadService>();
                     await postLoadService.PerformNavigation(file);
                 }
 

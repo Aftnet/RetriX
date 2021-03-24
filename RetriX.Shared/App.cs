@@ -1,4 +1,5 @@
 ﻿using MvvmCross;
+using MvvmCross.IoC;
 using MvvmCross.ViewModels;
 using RetriX.Shared.Services;
 
@@ -12,17 +13,17 @@ namespace RetriX.Shared
 
         public override void Initialize()
         {
-            Mvx.RegisterSingleton(Acr.UserDialogs.UserDialogs.Instance);
-            Mvx.RegisterSingleton(Plugin.FileSystem.CrossFileSystem.Current);
-            Mvx.RegisterSingleton(Plugin.LocalNotifications.CrossLocalNotifications.Current);
-            Mvx.RegisterSingleton(Plugin.VersionTracking.CrossVersionTracking.Current);
-            Mvx.RegisterSingleton(Plugin.Settings.CrossSettings.Current);
+            Mvx.IoCProvider.RegisterSingleton(Acr.UserDialogs.UserDialogs.Instance);
+            Mvx.IoCProvider.RegisterSingleton(Plugin.FileSystem.CrossFileSystem.Current);
+            Mvx.IoCProvider.RegisterSingleton(Plugin.LocalNotifications.CrossLocalNotifications.Current);
+            Mvx.IoCProvider.RegisterSingleton(Plugin.VersionTracking.CrossVersionTracking.Current);
+            Mvx.IoCProvider.RegisterSingleton(Plugin.Settings.CrossSettings.Current);
 
-            Mvx.ConstructAndRegisterSingleton<ICryptographyService, CryptographyService>();
-            Mvx.ConstructAndRegisterSingleton<ISaveStateService, SaveStateService>();
-            Mvx.LazyConstructAndRegisterSingleton<IEmulationService, EmulationService>();
-            Mvx.LazyConstructAndRegisterSingleton<IMvxAppStart, AppStart>();
-            Mvx.LazyConstructAndRegisterSingleton<PostLoadService, PostLoadService>();
+            Mvx.IoCProvider.ConstructAndRegisterSingleton<ICryptographyService, CryptographyService>();
+            Mvx.IoCProvider.ConstructAndRegisterSingleton<ISaveStateService, SaveStateService>();
+            Mvx.IoCProvider.LazyConstructAndRegisterSingleton<IEmulationService, EmulationService>();
+            Mvx.IoCProvider.LazyConstructAndRegisterSingleton<IMvxAppStart, AppStart>();
+            Mvx.IoCProvider.LazyConstructAndRegisterSingleton<PostLoadService, PostLoadService>();
         }
     }
 }

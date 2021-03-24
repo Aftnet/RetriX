@@ -1,4 +1,5 @@
 ﻿using MvvmCross;
+using MvvmCross.IoC;
 using MvvmCross.Logging;
 using MvvmCross.Platforms.Uap.Core;
 using MvvmCross.Platforms.Uap.Presenters;
@@ -30,21 +31,21 @@ namespace RetriX.UWP
 
         protected override void InitializeFirstChance()
         {
-            Mvx.ConstructAndRegisterSingleton<IPlatformService, PlatformService>();
-            Mvx.ConstructAndRegisterSingleton<IInputService, InputService>();
-            Mvx.ConstructAndRegisterSingleton<IAudioService, AudioService>();
-            Mvx.ConstructAndRegisterSingleton<IVideoService, VideoService>();
+            Mvx.IoCProvider.ConstructAndRegisterSingleton<IPlatformService, PlatformService>();
+            Mvx.IoCProvider.ConstructAndRegisterSingleton<IInputService, InputService>();
+            Mvx.IoCProvider.ConstructAndRegisterSingleton<IAudioService, AudioService>();
+            Mvx.IoCProvider.ConstructAndRegisterSingleton<IVideoService, VideoService>();
         }
 
         protected override void InitializeLastChance()
         {
-            Mvx.ConstructAndRegisterSingleton<IGameSystemsProviderService, GameSystemsProviderService>();
+            Mvx.IoCProvider.ConstructAndRegisterSingleton<IGameSystemsProviderService, GameSystemsProviderService>();
         }
 
         protected override IMvxWindowsViewPresenter CreateViewPresenter(IMvxWindowsFrame rootFrame)
         {
             var presenter = new CurrentViewModelPresenter(rootFrame);
-            Mvx.RegisterSingleton<ICurrentViewModelPresenter>(presenter);
+            Mvx.IoCProvider.RegisterSingleton<ICurrentViewModelPresenter>(presenter);
             return presenter;
         }
 

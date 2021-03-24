@@ -8,7 +8,7 @@ namespace RetriX.UWP.Pages
     public sealed partial class GamePlayerView : MvxWindowsPage
     {
         public GamePlayerViewModel VM => ViewModel as GamePlayerViewModel;
-        private VideoService Renderer { get; } = Mvx.Resolve<IVideoService>() as VideoService;
+        private VideoService Renderer { get; } = Mvx.IoCProvider.Resolve<IVideoService>() as VideoService;
 
         public GamePlayerView()
         {
